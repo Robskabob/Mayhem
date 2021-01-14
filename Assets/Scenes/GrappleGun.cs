@@ -67,32 +67,41 @@ public class GrappleGun : Equipment
 	public float Angle;
 	public float Angle2;
 	public List<bool> SignStack;
+	public float Health;
 	private void FixedUpdate()
 	{
 		if (inUse)
 		{
 			Distance = Vector2.Distance(transform.position, PosStack[PosStack.Count - 1]);
 			RaycastHit2D r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 1] - (Vector2)transform.position, Distance - .01f);
+			if(r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
+			{
+				Health -= P.Data.Dammage;
+				if (Health < 0)
+					inUseLast = false;
+				return;
+			}
 			if (r.point != Vector2.zero)
 			{				
 				PosStack.Add(r.collider.bounds.ClosestPoint(r.point));
 				LineDistance += Vector2.Distance(PosStack[PosStack.Count - 2], PosStack[PosStack.Count - 1]);
-				SignStack.Add(Vector2.SignedAngle((Vector2)transform.position - PosStack[PosStack.Count - 1], PosStack[PosStack.Count - 2] - PosStack[PosStack.Count - 1])<0);
+				//SignStack.Add(Vector2.SignedAngle((Vector2)transform.position - PosStack[PosStack.Count - 1], PosStack[PosStack.Count - 2] - PosStack[PosStack.Count - 1])<0);
 			}
 			else if (PosStack.Count > 1)
 			{
-				//r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 2] - (Vector2)transform.position, Vector2.Distance(PosStack[PosStack.Count - 2], transform.position) - .01f);
-				//DistOff = Vector2.Distance(transform.position, PosStack[PosStack.Count - 2]) - r.distance;
-				//point = r.point;
+				r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 2] - (Vector2)transform.position, Vector2.Distance(PosStack[PosStack.Count - 2], transform.position) - .01f);
+				DistOff = Vector2.Distance(transform.position, PosStack[PosStack.Count - 2]) - r.distance;
+				point = r.point;
 				Angle = Vector2.SignedAngle((Vector2)transform.position - PosStack[PosStack.Count - 1], PosStack[PosStack.Count - 2] - PosStack[PosStack.Count - 1]);
 				Angle2 = Vector2.Angle((Vector2)transform.position - PosStack[PosStack.Count - 1], PosStack[PosStack.Count - 2] - PosStack[PosStack.Count - 1]);
 				//Debug.Log($"Distance:{Vector2.Distance(PosStack[PosStack.Count - 2], PosStack[PosStack.Count - 1])} RayDist:{r.distance} RayPoint:{r.point}");
-				//if (r.point == Vector2.zero)
-				if (SignStack[SignStack.Count - 1] ? Angle > 0 : Angle < 0)
+				if (r.point == Vector2.zero)
+				//angle checker
+				//if (SignStack[SignStack.Count - 1] ? Angle > 0 : Angle < 0)
 				{
 					LineDistance -= Vector2.Distance(PosStack[PosStack.Count - 2], PosStack[PosStack.Count - 1]);
 					PosStack.RemoveAt(PosStack.Count - 1);
-					SignStack.RemoveAt(SignStack.Count - 1);
+				//	SignStack.RemoveAt(SignStack.Count - 1);
 				} 
 			}
 			Distance += LineDistance;

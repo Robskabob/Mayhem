@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using Mirror;
 using UnityEngine.Assertions;
+using System;
+using System.Collections.Generic;
 
 public class PlayerBrain : Brain
 {
@@ -16,6 +18,82 @@ public class PlayerBrain : Brain
 	public int Slot;
 	public bool Shooting;
 	public Vector2 vec;
+
+	private void Start()
+	{
+		ColorPicker CP = ColorPicker.CP;
+		CmdColor(CP.C);
+		CmdName(CP.N.text);
+		CmdGetState();
+		if (!NetSystem.I.PlayerBrains.ContainsKey(netId))
+			NetSystem.I.PlayerBrains.Add(netId,this);
+	}
+	public struct PlayerData 
+	{
+		public uint netid;
+		public string name;
+		public Color color;
+
+		public PlayerData(uint netid, string name, Color color)
+		{
+			this.netid = netid;
+			this.name = name;
+			this.color = color;
+		}
+	}
+	[Command]
+	private void CmdGetState()
+	{
+		PlayerData[] playerdata = new PlayerData[NetSystem.I.PlayerBrains.Count];
+		Dictionary<uint, PlayerBrain>.KeyCollection keys = NetSystem.I.PlayerBrains.Keys;
+		Dictionary<uint, PlayerBrain>.ValueCollection values = NetSystem.I.PlayerBrains.Values;
+		int i = 0;
+		foreach(PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
+		{
+			playerdata[i] = new PlayerData(PB.netId, PB.Body.NamePlate.text, PB.Body.GetComponent<SpriteRenderer>().color);
+			i++;
+		}
+		RpcGetState(playerdata);
+	}
+
+	[Command]
+	private void CmdName(string n)
+	{
+		Body.NamePlate.text = n;
+		RpcName(n);
+	}
+
+	[Command]
+	private void CmdColor(Color c)
+	{
+		Body.GetComponent<SpriteRenderer>().color = c;
+		RpcColor(c);
+	}
+	[TargetRpc]
+	private void RpcGetState(PlayerData[] playerdata)
+	{
+		for (int i = 0; i < playerdata.Length; i++)
+		{
+			PlayerData PD = playerdata[i];
+			if (PD.netid == netId)
+				continue;
+			NetSystem.I.PlayerBrains[PD.netid].Body.NamePlate.text = PD.name;
+			NetSystem.I.PlayerBrains[PD.netid].Body.GetComponent<SpriteRenderer>().color = PD.color;
+		}
+	}
+
+	[ClientRpc]
+	private void RpcName(string n)
+	{
+		Body.NamePlate.text = n;
+	}
+
+	[ClientRpc]
+	private void RpcColor(Color c)
+	{
+		Body.GetComponent<SpriteRenderer>().color = c;
+	}
+
 	public void Update()
 	{
 		if (Dir != vec)

@@ -14,6 +14,7 @@ public class Gun : Equipment
 	public float Speed;
 
 	public Projectile Projectile;
+	public ProjectileData ProjectileData;
 
 	public Mob Holder;
 	public override void Drop()
@@ -49,7 +50,7 @@ public class Gun : Equipment
 	void Fire(Vector2 Pos) 
 	{
 		Projectile P = Instantiate(Projectile);
-		P.Shoot(Holder,Pos-(Vector2)transform.position,Impulse,Life,Speed);
+		P.Shoot(Holder,Pos-(Vector2)transform.position,ProjectileData);
 	}
 
 	private void Update()

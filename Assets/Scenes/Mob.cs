@@ -1,11 +1,15 @@
 ﻿using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Mob : MonoBehaviour 
 {
+	public Text NamePlate;
 	public Rigidbody2D rb;
 	public Brain B;
+	public float Name;
+	public float Health;
 	public float Speed;
 	public int Team;
 
