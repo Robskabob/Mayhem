@@ -3379,7 +3379,7 @@ MonoBehaviour:
   onlineScene: 
   transport: {fileID: 545336744}
   networkAddress: localhost
-  maxConnections: 4
+  maxConnections: 10
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
@@ -3432,7 +3432,7 @@ MonoBehaviour:
   sslEnabled: 0
   sslCertJson: ./cert.json
   sslProtocols: 3072
-  _logLevels: 0
+  _logLevels: 1
 --- !u!114 &545336744
 MonoBehaviour:
   m_ObjectHideFlags: 0
