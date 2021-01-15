@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Mirror
 {
-    [CustomEditor(typeof(NetworkManager), true)]
+    [CustomEditor(typeof(NetworkManager), true,isFallback = true)]
     [CanEditMultipleObjects]
     public class NetworkManagerEditor : Editor
     {
