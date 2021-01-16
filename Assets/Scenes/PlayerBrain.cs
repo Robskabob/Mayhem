@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using Mirror;
-using UnityEngine.Assertions;
-using System;
 using System.Collections.Generic;
 
 public class PlayerBrain : Brain
@@ -29,6 +27,7 @@ public class PlayerBrain : Brain
 		if (hasAuthority)
 		{
 			PlayerClient.PC.PB = this;
+			PlayerClient.PC.OnStartClient();
 		}
 	}
 
@@ -175,5 +174,23 @@ public class PlayerBrain : Brain
 	public override bool isShooting()
 	{
 		return Shooting;
+	}
+
+	public override void Die()
+	{
+		if (hasAuthority)
+			CmdDie();
+	}
+	[Command]
+	public void CmdDie() 
+	{
+		RpcSpawn(Physics2D.Raycast((Random.insideUnitCircle + Vector2.up) * 50 ,Vector2.down).point + Vector2.up);
+	}
+	[ClientRpc]
+	public void RpcSpawn(Vector2 V) 
+	{
+		transform.position = V;
+		Body.Health = Body.MaxHealth;
+		Body.Shield = Body.MaxShield;
 	}
 }

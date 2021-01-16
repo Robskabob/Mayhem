@@ -7,15 +7,22 @@ public class PlayerClient : MonoBehaviour
 	public NetPlayer NP;
 	public ColorPicker CP;
 	public Chat Chat;
+	public Hud HUD;
 
 	private void Start()
 	{
 		PC = this;
 	}
 
+	public void OnStartClient() 
+	{
+		HUD.gameObject.SetActive(true);
+		HUD.Body = PB.Body;
+	}
+
 	private void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.T))
+		if(Input.GetKeyDown(KeyCode.Tilde))
 		{
 			Chat.gameObject.SetActive(!Chat.gameObject.activeSelf);
 		}

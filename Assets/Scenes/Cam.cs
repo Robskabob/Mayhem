@@ -21,8 +21,10 @@ public class Cam : MonoBehaviour
 		//	Acceleration += offset * Power * Time.fixedDeltaTime;
 		//Acceleration /= 1 + (Drag * Time.fixedDeltaTime);
 	}
-    void OnPreRender()
+    void Update()
 	{
+		if (Target == null)
+			return;
 		Vector2 offset = (Target.position + Target.velocity * Forward) - (Vector2)transform.position;
 		float mag = offset.magnitude;
 		offset *= mag;

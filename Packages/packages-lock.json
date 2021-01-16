@@ -78,7 +78,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.vscode": {
-      "version": "1.2.2",
+      "version": "1.2.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -92,7 +92,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
-      "version": "7.3.1",
+      "version": "7.5.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -101,12 +101,12 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.universal": {
-      "version": "7.3.1",
+      "version": "7.5.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.render-pipelines.core": "7.3.1",
-        "com.unity.shadergraph": "7.3.1"
+        "com.unity.render-pipelines.core": "7.5.2",
+        "com.unity.shadergraph": "7.5.2"
       },
       "url": "https://packages.unity.com"
     },
@@ -118,11 +118,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
-      "version": "7.3.1",
+      "version": "7.5.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.render-pipelines.core": "7.3.1"
+        "com.unity.render-pipelines.core": "7.5.2"
       },
       "url": "https://packages.unity.com"
     },
@@ -147,12 +147,6 @@
       }
     },
     "com.unity.modules.ai": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {}
-    },
-    "com.unity.modules.androidjni": {
       "version": "1.0.0",
       "depth": 0,
       "source": "builtin",
@@ -218,6 +212,14 @@
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.imageconversion": "1.0.0"
+      }
+    },
+    "com.unity.modules.subsystems": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.jsonserialize": "1.0.0"
       }
     },
     "com.unity.modules.tilemap": {

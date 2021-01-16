@@ -8,14 +8,16 @@ public class GrappleGun : Equipment
 	public LineRenderer RopeVis;
 	public List<Vector2> PosStack;
 	//public Vector2 Pos;
-	public float Dist;
+	public float FullDistance;
 	public float Distance;
 
 	public bool inUse;
 	public bool inUseLast;
 
-	public float Real;
 	public float Force;
+	public float BounceRange;
+	public float NormalRange;
+	public float MaxBounceMult;
 
 	public override void Drop()
 	{
@@ -45,12 +47,17 @@ public class GrappleGun : Equipment
 			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position,25);
 			if (r.point == Vector2.zero)
 				return;
+			if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
+			{
+				return;
+			}
+			Health = MaxHealth;
 			PosStack = new List<Vector2>() { r.point };
 			SignStack = new List<bool>();
 			//Rope.anchor = Pos;
 			//Rope.enabled = true;
 			RopeVis.enabled = true;
-			Dist = r.distance;
+			FullDistance = r.distance;
 			//Rope.distance = Vector2.Distance(transform.position, Pos);
 			//Rope.anchor = Pos;// - (Vector2)transform.position;
 			//Rope.connectedAnchor = Pos;
@@ -60,7 +67,6 @@ public class GrappleGun : Equipment
 		inUseLast = true;
 		inUse = true;
 	}
-	Vector2 velocity;
 	public float DistOff;
 	public Vector2 point;
 	public float LineDistance;
@@ -68,6 +74,7 @@ public class GrappleGun : Equipment
 	public float Angle2;
 	public List<bool> SignStack;
 	public float Health;
+	public float MaxHealth;
 	private void FixedUpdate()
 	{
 		if (inUse)
@@ -78,7 +85,7 @@ public class GrappleGun : Equipment
 			{
 				Health -= P.Data.Dammage;
 				if (Health < 0)
-					inUseLast = false;
+					inUse = false;
 				return;
 			}
 			if (r.point != Vector2.zero)
@@ -90,6 +97,13 @@ public class GrappleGun : Equipment
 			else if (PosStack.Count > 1)
 			{
 				r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 2] - (Vector2)transform.position, Vector2.Distance(PosStack[PosStack.Count - 2], transform.position) - .01f);
+				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P2)
+				{
+					Health -= P2.Data.Dammage;
+					if (Health < 0)
+						inUse = false;
+					return;
+				}
 				DistOff = Vector2.Distance(transform.position, PosStack[PosStack.Count - 2]) - r.distance;
 				point = r.point;
 				Angle = Vector2.SignedAngle((Vector2)transform.position - PosStack[PosStack.Count - 1], PosStack[PosStack.Count - 2] - PosStack[PosStack.Count - 1]);
@@ -105,29 +119,30 @@ public class GrappleGun : Equipment
 				} 
 			}
 			Distance += LineDistance;
-			if (Dist < Distance) 
+			float Diff = Distance - FullDistance;
+			if (Diff > 0)
 			{
-				velocity += (PosStack[PosStack.Count - 1] - (Vector2)transform.position) * Force * (Distance - Dist);
+				Vector2 impulse = ((PosStack[PosStack.Count - 1] - (Vector2)transform.position)).normalized * Force * Time.fixedDeltaTime;
+				if (Diff > NormalRange) // > 2
+				{
+					//Debug.DrawLine(transform.position, (Vector2)transform.position + impulse / 10, Color.yellow);
+					Debug.DrawLine((Vector2)transform.position + impulse / 10, (Vector2)transform.position + (impulse * Mathf.Min(MaxBounceMult,Diff - NormalRange + BounceRange)) / 10, Color.red);
+					rb.AddForce(impulse * Mathf.Min(MaxBounceMult, Diff - NormalRange + BounceRange));
+				}
+				else if (Diff > BounceRange)// 1 - 2
+				{
+					Debug.DrawLine(transform.position, (Vector2)transform.position + impulse / 10, Color.yellow);
+					rb.AddForce(impulse);
+				}
+				else // 0 - 1
+				{
+					Debug.DrawLine(transform.position, (Vector2)transform.position + impulse * (Diff/BounceRange) / 10, Color.green);
+					rb.AddForce(impulse);				
+				}
 			}
-			else 
-			{
-				velocity *= 0;
-			}
-			velocity /= 2;
-			rb.AddForce(velocity* Time.fixedDeltaTime);
-		
-		}
-		//if (inUse)
-		//{
-		//	Distance = Vector2.Distance(transform.position, Pos);
-		//	if(Dist < Distance) 
-		//	{
-		//		rb.AddForce(Vector2.Dot(rb.velocity, ((Vector2)transform.position - Pos).));
-		//	}
-		//
-		//}
-	}
 
+		}
+	}
 	private void Update()
 	{
 		if (inUse)

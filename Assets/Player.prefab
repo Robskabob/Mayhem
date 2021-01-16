@@ -266,19 +266,22 @@ MonoBehaviour:
   rb: {fileID: 0}
   RopeVis: {fileID: 2631108224315750911}
   PosStack: []
-  Dist: 0
+  FullDistance: 0
   Distance: 0
   inUse: 0
   inUseLast: 0
-  Real: 150
-  Force: 500
+  Force: 2500
+  BounceRange: 0.5
+  NormalRange: 1
+  MaxBounceMult: 2
   DistOff: 0
   point: {x: 0, y: 0}
   LineDistance: 0
   Angle: 0
   Angle2: 0
   SignStack: 
-  Health: 0
+  Health: 5
+  MaxHealth: 5
 --- !u!120 &2631108224315750911
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -430,14 +433,25 @@ MonoBehaviour:
   NamePlate: {fileID: 8113226849931944284}
   rb: {fileID: 2631108224710302162}
   B: {fileID: 2631108224710302163}
-  Name: 0
-  Health: 0
-  Speed: 800
+  Health: 30
+  MaxHealth: 30
+  Shield: 20
+  MaxShield: 20
+  ShieldRate: 5
+  ShieldTime: 1
+  ShieldWait: 0
+  MinSpeed: 3
+  Speed: 1500
+  AirSpeed: 500
+  Jump: 1000
   Team: 0
   Equipment:
   - {fileID: 2631108224315750910}
   - {fileID: 2631108224761539400}
   ActiveSlot: 0
+  Count: 0
+  JumpTime: 0.5
+  JumpWait: 0
 --- !u!114 &2631108224710302163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -629,7 +643,11 @@ MonoBehaviour:
   Speed: 1
   Projectile: {fileID: 1627303036508749383, guid: d8b48f31ae6816341b4b6a4171b41691,
     type: 3}
-  ProjectileData: {fileID: 11400000, guid: 3c85d95c20f8e294ba2e803f9c192641, type: 2}
+  ProjectileData:
+    LifeTime: 5
+    Impulse: 500
+    Speed: 5
+    Dammage: 5
   Holder: {fileID: 2631108224710302164}
 --- !u!1 &2638255778563060813
 GameObject:
@@ -665,8 +683,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 20}
-  m_SizeDelta: {x: 400, y: 30}
+  m_AnchoredPosition: {x: 0, y: 30}
+  m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5151828107307745760
 CanvasRenderer:
