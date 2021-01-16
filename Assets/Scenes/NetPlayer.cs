@@ -42,7 +42,7 @@ public class NetPlayer : NetworkBehaviour
 	}
 
 	[Command]
-	private void CmdGetState()
+	public void CmdGetState()
 	{
 		PlayerData[] playerdata = new PlayerData[NetSystem.I.Players.Count];
 		int i = 0;
@@ -55,7 +55,7 @@ public class NetPlayer : NetworkBehaviour
 	}
 
 	[Command]
-	private void CmdName(string n)
+	public void CmdName(string n)
 	{
 		Name = n;
 		NetSystem.I.PlayerBrains[netId].Body.NamePlate.text = n;
@@ -63,14 +63,14 @@ public class NetPlayer : NetworkBehaviour
 	}
 
 	[Command]
-	private void CmdColor(Color c)
+	public void CmdColor(Color c)
 	{
 		Color = c;
 		NetSystem.I.PlayerBrains[netId].Body.GetComponent<SpriteRenderer>().color = c;
 		RpcColor(c);
 	}
 	[TargetRpc]
-	private void RpcGetState(PlayerData[] playerdata)
+	public void RpcGetState(PlayerData[] playerdata)
 	{
 		for (int i = 0; i < playerdata.Length; i++)
 		{
@@ -93,14 +93,14 @@ public class NetPlayer : NetworkBehaviour
 	}
 
 	[ClientRpc]
-	private void RpcName(string n)
+	public void RpcName(string n)
 	{
 		Name = n;
 		NetSystem.I.PlayerBrains[netId].Body.NamePlate.text = n;
 	}
 
 	[ClientRpc]
-	private void RpcColor(Color c)
+	public void RpcColor(Color c)
 	{
 		Color = c;
 		NetSystem.I.PlayerBrains[netId].Body.GetComponent<SpriteRenderer>().color = c;
@@ -110,12 +110,28 @@ public class NetPlayer : NetworkBehaviour
 	public void CmdChat(string M)
 	{
 		//log ?
-		RpcChat(new Message(Name,Color,M));
+		Message msg = new Message(Name, Color, M);
+		string str = msg.ParseCommand();
+		if(str == "Not Command")
+			RpcChat(msg);
+		else if(str.Contains("Done")) 
+		{
+			RpcTargetChat(new Message("Command", Color.blue, str));
+		}
+		else
+		{
+			RpcTargetChat(new Message("Command", Color.blue, "<color=red>"+str+"</color>"));
+		}
+
 	}
 	[ClientRpc]
 	public void RpcChat(Message M)
 	{
-		PlayerClient.PC.Chat.Messages.Add(M);
-		PlayerClient.PC.Chat.Timeing.Add(15);
+		PlayerClient.PC.Chat.AddMessage(M);
+	}
+	[TargetRpc]
+	public void RpcTargetChat(Message M)
+	{
+		PlayerClient.PC.Chat.AddMessage(M);
 	}
 }
