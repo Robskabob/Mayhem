@@ -14,8 +14,12 @@ public class NetSystem : NetworkManager
 
     public PlayerBrain GamePlayer;
 
+	public List<Equipment> Equipment;
+	public ItemBox ItemBox;
+
 	public override void Start()
 	{
+		Registry.Reg.Equipment = Equipment;
 		NetworkServer.RegisterHandler<JoinMessage>(OnJoinGame);
 		NetworkClient.RegisterHandler<JoinedMessage>(OnJoinedGame);
 		base.Start();
@@ -43,6 +47,13 @@ public class NetSystem : NetworkManager
 
 		PlayerBrain PB = Instantiate(GamePlayer);
 		NetworkServer.Spawn(PB.gameObject, conn);
+
+		for (int i = 0; i < 10; i++)
+		{
+			ItemBox IB = Instantiate(ItemBox);
+			NetworkServer.Spawn(IB.gameObject);
+			IB.Randomize();
+		}
 
 		//Players.Add(NP.netId, NP);
 		//PlayerBrains.Add(NP.netId, PB);

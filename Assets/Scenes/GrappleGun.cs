@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class GrappleGun : Equipment
 {
@@ -8,6 +9,7 @@ public class GrappleGun : Equipment
 	public LineRenderer RopeVis;
 	public List<Vector2> PosStack;
 	//public Vector2 Pos;
+	public float MaxDistance = 25;
 	public float FullDistance;
 	public float Distance;
 
@@ -22,21 +24,36 @@ public class GrappleGun : Equipment
 	public override void Drop()
 	{
 		transform.parent = null;
-		//Destroy(Rope);
+		rb = null;
+		RpcDrop();
+	}
+	[ClientRpc]
+	public void RpcDrop()
+	{
+		transform.parent = null;
 		rb = null;
 	}
 
 	public override void Pickup(Mob M)
 	{
 		transform.parent = M.transform;
+		transform.localPosition = Vector3.zero;
 		rb = M.rb;
-		//Rope = M.gameObject.AddComponent<DistanceJoint2D>();
-		//Rope.autoConfigureConnectedAnchor = false;
-		//Rope.autoConfigureDistance = false;
-		//Rope.enableCollision = true;
-		//Rope.maxDistanceOnly = true;
-		//Rope.maxForce = 35;
-		//Rope.connectedBody = M.rb;
+
+		netIdentity.AssignClientAuthority(M.B.netIdentity.connectionToClient);
+		if(isServerOnly)
+			M.Equipment.Add(this);
+
+		RpcPickup(M.B.netId);
+	}
+	[ClientRpc]
+	public void RpcPickup(uint MobId)
+	{
+		Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
+		transform.parent = M.transform;
+		transform.localPosition = Vector3.zero;
+		rb = M.rb;
+		M.Equipment.Add(this);
 	}
 
 	public override void Use(Vector2 pos)
@@ -44,7 +61,7 @@ public class GrappleGun : Equipment
 		if(inUse == false) 
 		{
 			LineDistance = 0;
-			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position,25);
+			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance);
 			if (r.point == Vector2.zero)
 				return;
 			if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
@@ -58,6 +75,7 @@ public class GrappleGun : Equipment
 			//Rope.enabled = true;
 			RopeVis.enabled = true;
 			FullDistance = r.distance;
+			CmdGrapple(r.point,FullDistance);
 			//Rope.distance = Vector2.Distance(transform.position, Pos);
 			//Rope.anchor = Pos;// - (Vector2)transform.position;
 			//Rope.connectedAnchor = Pos;
@@ -67,6 +85,19 @@ public class GrappleGun : Equipment
 		inUseLast = true;
 		inUse = true;
 	}
+
+	[Command]
+	public void CmdGrapple(Vector2 pos, float dist)
+	{
+		RpcGrapple(pos, dist);
+	}
+	[ClientRpc(excludeOwner = true)]
+	public void RpcGrapple(Vector2 pos, float dist)
+	{
+		PosStack = new List<Vector2>() { pos };
+		FullDistance = dist;
+	}
+
 	public float DistOff;
 	public Vector2 point;
 	public float LineDistance;
@@ -169,5 +200,63 @@ public class GrappleGun : Equipment
 		}
 		RopeVis.positionCount = PosStack.Count + 1;
 		RopeVis.SetPositions(LineArray);
+	}
+	public override string PrintStats()
+	{
+		return
+			$"Max Dist {MaxDistance}\n" +
+			$"Force {Force}\n" +
+			$"R1 {BounceRange}\n" +
+			$"R2 {NormalRange}\n" +
+			$"Mult {MaxBounceMult}";
+	}
+
+	public override void Randomize()
+	{
+		MaxHealth = Random.Range(5,100f);
+		MaxDistance = Random.Range(1,50f);
+
+		Force = Random.Range(1000, 10000f) * Random.Range(.1f, 1);
+		BounceRange = Random.Range(.1f, MaxDistance / 10);
+		NormalRange = Random.Range(BounceRange, MaxDistance / 5);
+		MaxBounceMult = Random.Range(1, 10f);
+
+		SetStats(new GrappleStats(this));
+	}
+
+	[ClientRpc]
+	public void SetStats(GrappleStats stats)
+	{
+		stats.Set(this);
+	}
+
+	public struct GrappleStats
+	{
+		public float MaxDistance;
+		public float MaxHealth;
+		public float Force;
+		public float BounceRange;
+		public float NormalRange;
+		public float MaxBounceMult;
+
+		public GrappleStats(GrappleGun Base)
+		{
+			MaxDistance = Base.MaxDistance;
+			MaxHealth = Base.MaxHealth;
+			Force = Base.Force;
+			BounceRange = Base.BounceRange;
+			NormalRange = Base.NormalRange;
+			MaxBounceMult = Base.MaxBounceMult;
+		}
+
+		public void Set(GrappleGun Base)
+		{
+			Base.MaxDistance = MaxDistance;
+			Base.MaxHealth = MaxHealth;
+			Base.Force = Force;
+			Base.BounceRange = BounceRange;
+			Base.NormalRange = NormalRange;
+			Base.MaxBounceMult = MaxBounceMult;
+		}
 	}
 }

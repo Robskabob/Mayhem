@@ -15,7 +15,8 @@ public class PlayerBrain : Brain
 	public Vector2 Look;
 	public int Slot;
 	public bool Shooting;
-	public Vector2 vec;
+	public bool Interacting;
+	public bool Dropping;
 
 	//public NetPlayer LocalPlayer;
 	public uint LocalPlayerID;
@@ -33,11 +34,6 @@ public class PlayerBrain : Brain
 
 	public void Update()
 	{
-		if (Dir != vec)
-		{
-			vec = Dir;
-		}
-
 		if (hasAuthority) 
 		{
 			Vector2 V = Vector2.zero;
@@ -74,9 +70,15 @@ public class PlayerBrain : Brain
 
 			if (Input.GetKeyDown(KeyCode.Tab))
 			{
-				Slot += 1;
+				if (Input.GetKey(KeyCode.LeftShift))
+					Slot -= 1;
+				else
+					Slot += 1;
+
 				if (Slot >= Body.Equipment.Count)
 					Slot = 0;
+				else if (Slot < 0)
+					Slot = Body.Equipment.Count-1;
 				CmdSlot(Slot);
 			}
 
@@ -86,7 +88,19 @@ public class PlayerBrain : Brain
 				CmdShoot(Shooting);
 			}
 
-			if(Time.time / updates > 1)
+			if (Interacting != Input.GetKey(KeyCode.E))
+			{
+				Interacting = Input.GetKey(KeyCode.E);
+				CmdInteract(Interacting);
+			}
+
+			if (Dropping != Input.GetKey(KeyCode.Q))
+			{
+				Dropping = Input.GetKey(KeyCode.Q);
+				CmdDrop(Dropping);
+			}
+
+			if (Time.time / updates > 1)
 			{
 				updates++;
 				//Debug.Log(Time.time / (updates-1));
@@ -154,6 +168,28 @@ public class PlayerBrain : Brain
 	{
 		Shooting = shoot;
 	}
+	[Command]
+	public void CmdInteract(bool Interact)
+	{
+		Interacting = Interact;
+		RpcInteract(Interact);
+	}
+	[ClientRpc(excludeOwner = true)]
+	public void RpcInteract(bool Interact)
+	{
+		Interacting = Interact;
+	}
+	[Command]
+	public void CmdDrop(bool Drop)
+	{
+		Dropping = Drop;
+		RpcInteract(Drop);
+	}
+	[ClientRpc(excludeOwner = true)]
+	public void RpcDrop(bool Drop)
+	{
+		Dropping = Drop;
+	}
 
 
 	public override Vector2 GetDir()
@@ -166,7 +202,7 @@ public class PlayerBrain : Brain
 		return Look;
 	}
 
-	public override int GetSlot(int Current)
+	public override int GetSlot()
 	{
 		return Slot;
 	}
@@ -174,6 +210,14 @@ public class PlayerBrain : Brain
 	public override bool isShooting()
 	{
 		return Shooting;
+	}
+	public override bool isInteracting()
+	{
+		return Interacting;
+	}
+	public override bool isDropping()
+	{
+		return Dropping;
 	}
 
 	public override void Die()

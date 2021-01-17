@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Reflection;
+using System.ComponentModel;
 
 public class Chat : MonoBehaviour 
 {
@@ -15,6 +17,8 @@ public class Chat : MonoBehaviour
 	private void Start()
 	{
 		IF.onEndEdit.AddListener((v) => PlayerClient.PC.NP.CmdChat(v));
+		Debug.Log(typeof(PlayerBrain).AssemblyQualifiedName +"\n"+ typeof(GrappleGun).AssemblyQualifiedName);
+		StatCommand.Start();
 	}
 
 	public void AddMessage(Message M)
@@ -28,9 +32,9 @@ public class Chat : MonoBehaviour
 		string chat = "";
 		for (int i = 0; i < Messages.Count; i ++) 
 		{
-			chat += Messages[i].GenerateText();
 			chat += "\n";
-			if(Messages.Count > 5) 
+			chat += Messages[i].GenerateText();
+			if(text.cachedTextGenerator.lineCount > 70) 
 			{
 				Timeing[i]-=Time.deltaTime;
 				if(Timeing[i] < 0)
@@ -97,95 +101,209 @@ public struct Message
 	}
 }
 
-public class Registry 
+public static class StatCommand 
 {
-	public static Registry Reg = new Registry();
-	public List<Command> Commands; //make dict?
-
-	Registry() 
+	public static void Start()
 	{
-		Commands = new List<Command>()
+		NetworkClient.RegisterHandler<SetStatMessage>(OnStatSet);
+	}
+	public static string StatExe(string[] par)
+	{
+		if (par.Length < 3)
+			return "Not All Parameters Filled";
+		if (!uint.TryParse(par[1], out uint id))
+			return "Failed to Parse ID";
+		if (!NetworkIdentity.spawned.TryGetValue(id, out NetworkIdentity NI))
+			return "Invalid ID";
+
+		string msg = "";
+
+		if (Step(par, 2,id, NI, ref msg)) 
+			return msg + "Done";
+		else
+			return msg;
+	}
+
+	public static bool Step(string[] par, int depth,uint id, UnityEngine.Component Comp, ref string msg) 
+	{
+		switch (par[depth])
 		{
-			new Command("Help","Tells you whats up!","Help -command(string)",(par) =>
-			{
-				string msg = "";
-				if(par.Length == 1)
+			case "List":
+				msg += PrintStats(Comp,par,depth+1);
+				break;
+			case "Comp":
+				if (par.Length < depth + 2) 
 				{
-					for(int i = 0; i < Commands.Count; i++)
+					msg = "Missing Parameter at "+par.Length;
+					return false;
+				}
+				UnityEngine.Component Com = GetComponent(Comp,par[depth + 1],ref msg);
+				if (Com == null)
+				{
+					msg = "Component Not Found";
+					return false;
+				}
+				return Step(par,depth+2,id,Com,ref msg);
+			case "Set":
+				if (par.Length < depth + 3)
+				{
+					msg = "Missing Parameter at " + par.Length;
+					return false;
+				}
+				return SetStat(id,Comp,par[depth + 1],par[depth + 2],ref msg);
+			default:
+				msg = "Not an Option";
+				return false;
+		}
+		return true;
+	}
+
+	public static bool SetStat(uint NetId, UnityEngine.Component Comp, string Field, string value, ref string msg) 
+	{
+		Type T = Comp.GetType();
+		FieldInfo FI = T.GetField(Field);
+		Type FT = FI.FieldType;
+
+		object o = Convert.ChangeType(value,FT);
+		//Debug.Log(o);
+
+
+		FI.SetValue(Comp, o);
+		//Debug.Log(FI.Name + " " + FT + " " + FI.GetValue(Comp));
+		//Debug.Log(FT.GetMethod("TryParse",BindingFlags.Public | BindingFlags.Static,null,CallingConventions.Any,new Type[] {FT,FT.MakeByRefType()},null).Invoke(FT.TypeInitializer.Invoke(null), new object[]{value,FT.TypeInitializer.Invoke(null)}));
+
+		NetworkServer.SendToAll(new SetStatMessage(NetId,Comp.GetType().Name,Field,value));
+		return true;
+	}
+
+	public static UnityEngine.Component GetComponent(UnityEngine.Component com, string type, ref string msg) 
+	{
+		Type T = GetType(type);
+		if(T == null) 
+		{
+			msg = "Not a Type";
+			return null;
+		}
+		var v = com.GetComponent(T);
+		return v;
+	}
+
+	public static string PrintStats(object o, string[] par, int depth)
+	{
+		Type T = o.GetType();
+		string msg = T.FullName + " : " + T.BaseType.Name + "\n";
+		Debug.Log(par.Length + " | " + depth);
+		string str;
+		if (par.Length <= depth)
+			str = "Fields";
+		else
+			str = par[depth];
+
+		switch (str)
+		{
+			case "Help":
+				msg += "Help\n" +
+					"Fields\n" +
+					"Members\n" +
+					"Properties\n";
+				break;
+			case "Fields":
+				msg += "Fields \n";
+				FieldInfo[] FI = T.GetFields();
+				for (int i = 0; i < FI.Length; i++)
+				{
+					msg += FI[i].Name + ": ";
+					if (FI[i].FieldType.IsArray)
 					{
-						msg += Commands[i].Name + " ";
-						msg += Commands[i].Discription +"\n";
-					}
-				}
-				else
-				{
-					for(int i = 0; i < Commands.Count; i++)
-					{
-						if(Commands[i].Name == par[1])
-						{
-							msg += Commands[i].Discription +" ";
-							msg += Commands[i].Useage + "\n";
-							continue;
-						}
-					}
-				}
-				return "Done\n" + msg;
-				//send to owner;
-			}),
-			new Command("List","List player names and ids","List",(par) =>
-			{
-				string msg = "";
-				foreach(var v in NetSystem.I.Players)
-				{
-					msg += v.Value.Name;
-					msg += ": " + v.Key + "\n";
-				}
-				return "Done\n" + msg;
-				//send to owner;
-			}),
-			new Command("SetName","Sets the Name of a Player","SetName PlayerID(uint) Name(string)",(par) =>
-			{
-				if(par.Length < 3)
-					return "Not All Parameters Filled";
-				if(uint.TryParse(par[1],out uint id))
-					if (NetSystem.I.Players.TryGetValue(id, out NetPlayer NP))
-						NP.RpcName(par[2]);
-					else
-						return "Invalid ID";
-				else
-					return "Failed to Parse ID";
-				return "Done";
-			}),
-			new Command("SetColor","Sets the Color of a Player","SetColor PlayerID(uint) Color(Color)",(par) =>
-			{
-				if(par.Length < 3)
-					return "Not All Parameters Filled";
-				if (ColorUtility.TryParseHtmlString(par[2],out Color C))
-					if(uint.TryParse(par[1],out uint id))
-						if (NetSystem.I.Players.TryGetValue(id, out NetPlayer NP))
-							NP.RpcColor(C);
+						System.Collections.IList arr = (System.Collections.IList)FI[i].GetValue(o);
+
+						msg += arr.Count;
+						if(arr.Count > 0)
+							msg += " [0]" + arr[0] + "\n";
 						else
-							return "Invalid ID";
+							msg += "\n";
+					}
 					else
-						return "Failed to Parse ID";
-				else
-					return "Failed to Parse Color";
-				return "Done";
-			}),
-			new Command("Kill","Kills the selected Player","Kill PlayerID(uint)",(par) =>
-			{
-				if(par.Length < 2)
-					return "Not All Parameters Filled";
-				if(uint.TryParse(par[1],out uint id))
-					if (NetSystem.I.PlayerBrains.TryGetValue(id, out PlayerBrain PB))
-						PB.CmdDie();
-					else
-						return "Invalid ID";
-				else
-					return "Failed to Parse ID";
-				return "Done";
-			})
+						msg += FI[i].GetValue(o) + "\n";
+				}
+				break;
+			case "Members":
+				msg += "Members \n";
+				MemberInfo[] MI = T.GetMembers();
+				for (int i = 0; i < MI.Length; i++)
+				{
+					msg += MI[i].Name + ": " + MI[i].MemberType + "\n";
+				}
+				break;
+			case "Properties":
+				msg += "Properties \n";
+				PropertyInfo[] PI = T.GetProperties();
+				for (int i = 0; i < PI.Length; i++)
+				{
+					msg += PI[i].Name + ": " + PI[i].GetValue(o) + "\n";
+				}
+				break;
+			default:
+				msg += str + " is not an option try Help";
+				break;
+		}
+		return msg;
+	}
+
+	public static Type GetType(string name)
+	{
+		Type T = Type.ReflectionOnlyGetType(name + ", Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", false, true);
+
+		switch (name)
+		{
+			case "PlayerBrain":
+				T = typeof(PlayerBrain);
+				break;
+			case "Mob":
+				T = typeof(Mob);
+				break;
+			case "Gun":
+				T = typeof(Gun);
+				break;
+			case "GrappleGun":
+				T = typeof(GrappleGun);
+				break;
+			case "NetPlayer":
+				T = typeof(NetPlayer);
+				break;
+			case "Projectile":
+				T = typeof(Projectile);
+				break;
 		};
+		return T;
+	}
+
+
+	public static void OnStatSet(NetworkConnection conn, SetStatMessage Stat)
+	{
+		NetworkIdentity.spawned.TryGetValue(Stat.NetId,out NetworkIdentity NI);
+		Type T = GetType(Stat.type);
+		UnityEngine.Component Comp = NI.GetComponent(T);
+		FieldInfo FI = T.GetField(Stat.field);
+		Debug.Log(FI.Name + " " + FI.FieldType + " " + FI.GetValue(Comp));
+		Debug.Log(Stat.value);
+		FI.SetValue(Comp, Convert.ChangeType(Stat.value, FI.FieldType));
+	}
+
+	public struct SetStatMessage : NetworkMessage
+	{
+		public uint NetId;
+		public string type;
+		public string field;
+		public string value;
+
+		public SetStatMessage(uint netId, string type, string field, string value)
+		{
+			NetId = netId;
+			this.type = type;
+			this.field = field;
+			this.value = value;
+		}
 	}
 }
 

@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ public class Mob : MonoBehaviour
 
 	public List<Equipment> Equipment;
 	public int ActiveSlot;
+	public bool wasDropping;
 
 	public List<Collision2D> Collisions = new List<Collision2D>();
 
@@ -77,14 +79,32 @@ public class Mob : MonoBehaviour
 	private void Update()
 	{
 
-		ActiveSlot = B.GetSlot(ActiveSlot);
+		ActiveSlot = B.GetSlot();
 
-		Equipment[ActiveSlot].transform.right = B.GetLook();
-
-		if (B.isShooting()) 
+		if (Equipment.Count > 0)
 		{
-			Equipment[ActiveSlot].Use(B.GetLook());
+			Equipment[ActiveSlot].transform.right = B.GetLook();
+
+			if (B.isDropping()) 
+			{
+				if (!wasDropping)
+				{
+					Equipment[ActiveSlot].Drop();
+					Equipment.RemoveAt(ActiveSlot);
+					wasDropping = true;
+				}
+			}
+			else
+			{
+				wasDropping = false;
+			}
+
+			if (B.isShooting()) 
+			{
+				Equipment[ActiveSlot].Use(B.GetLook());
+			}
 		}
+
 
 		if(Shield < MaxShield)
 		{
@@ -106,7 +126,7 @@ public class Mob : MonoBehaviour
 
 	private void Start()
 	{
-		Equipment[ActiveSlot].Pickup(this);
+		//Equipment[ActiveSlot].Pickup(this);
 	}
 
 	private void OnCollisionEnter2D(Collision2D col)
@@ -125,4 +145,23 @@ public abstract class Equipment : NetworkBehaviour
 	public abstract void Use(Vector2 Pos);
 	public abstract void Pickup(Mob M);
 	public abstract void Drop();
+	public abstract void Randomize();
+	public abstract string PrintStats();
+	//public abstract void SetStats(EquipmentStats stats);
+	//
+	//public interface EquipmentStats 
+	//{
+	//	void Set(Equipment E);
+	//}
+	private void OnTriggerStay2D(Collider2D col)
+	{
+		if (isServer)
+		{
+			Mob M = col.GetComponent<Mob>();
+			if (M != null && M.B.isInteracting())
+			{
+				Pickup(M);
+			}
+		}
+	}
 }

@@ -23,6 +23,12 @@ public class Cam : MonoBehaviour
 	}
     void Update()
 	{
+		if(float.IsInfinity(transform.position.x) || float.IsInfinity(transform.position.y) || float.IsInfinity(Velocity.y) || float.IsInfinity(Velocity.x))
+		{
+			transform.position = Target.transform.position - Vector3.forward * 10;
+			Acceleration = Vector2.zero;
+			Velocity = Vector2.zero;
+		}
 		if (Target == null)
 			return;
 		Vector2 offset = (Target.position + Target.velocity * Forward) - (Vector2)transform.position;
