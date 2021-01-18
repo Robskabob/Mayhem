@@ -21,6 +21,7 @@ public class RopeShot : DirectedEquipment
 	public bool inAir;
 	public bool Latched;
 
+	[Command]
 	public override void Drop()
 	{
 		Abandand = true;
@@ -63,11 +64,11 @@ public class RopeShot : DirectedEquipment
 				Debug.LogError("Cant pick up but valid on Server?");
 		}
 	}
-	public override void Use(Vector2 Pos)
+	public override void Use(Vector2 pos)
 	{
 		if (inUse == false && !Latched && !inAir)
 		{
-			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos - (Vector2)transform.parent.position, MaxDistance);
+			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance);
 			if (r.point == Vector2.zero)
 				return;
 			if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
@@ -76,11 +77,12 @@ public class RopeShot : DirectedEquipment
 			}
 			Health = MaxHealth;
 
+			Pos = r.point;
 			RopeVis.enabled = true;
 			Shot.parent = null;
 
 			if (hasAuthority)
-				CmdLatch(r.point);
+				CmdLatch(Pos);
 
 			inUse = true;
 			inAir = true;

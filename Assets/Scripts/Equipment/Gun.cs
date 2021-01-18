@@ -18,6 +18,7 @@ public class Gun : WeaponEquipment
 	public ProjectileData ProjectileData;
 
 	public Mob Holder;
+	[Command]
 	public override void Drop()
 	{
 		Abandand = true;
@@ -122,7 +123,7 @@ public class Gun : WeaponEquipment
 		return
 			$"Damage {ProjectileData.Dammage:f}\n" +
 			$"Fire Rate {FireTime:f}\n" +
-			$"Reload {ReloadTime:f} | {waitTime:f}\n" +
+			$"Reload {ReloadTime:f} | {Mathf.Max(waitTime, 0):f}\n" +
 			$"Speed {ProjectileData.Impulse:f} | {ProjectileData.Speed:f}\n" +
 			$"Clip {clip} / {Clip}";
 	}

@@ -12,6 +12,8 @@ public class JetPack : ActiveEquipment
 	public float FuelTime;
 	public float FuelWait;
 
+
+	[Command]
 	public override void Drop()
 	{
 		Abandand = true;

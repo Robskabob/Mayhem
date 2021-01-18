@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Hud : MonoBehaviour 
@@ -12,6 +13,11 @@ public class Hud : MonoBehaviour
 	public Text Stats;
 
 	public Mob Body;
+
+	private void Start()
+	{
+		gameObject.SetActive(false);
+	}
 
 	private void Update()
 	{

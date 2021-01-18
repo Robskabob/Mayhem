@@ -1,6 +1,8 @@
 ﻿using Mirror;
+using System;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ItemBox : NetworkBehaviour 
 {
@@ -13,9 +15,37 @@ public class ItemBox : NetworkBehaviour
 	public Color LandColor;
 	public Color AgeColor;
 
+	public override void OnStartClient()
+	{
+		GetState();
+	}
+
+	[Command]
+	public void GetState() 
+	{
+		uint id = 0;
+		if (Contents != null)
+			id = Contents.netId;
+		RpcGetState(id,Target,Active,time,DateTime.UtcNow.ToFileTimeUtc());
+	}
+
+	[ClientRpc]
+	public void RpcGetState(uint EqId, Vector2 target, bool active,float Time,long fileTime)
+	{
+		time = Time - (float)(DateTime.UtcNow - DateTime.FromFileTimeUtc(fileTime)).TotalSeconds;
+		Active = active;
+		Target = target;
+		if(EqId != 0)
+			Contents = NetworkIdentity.spawned[EqId].GetComponent<Equipment>();
+	}
+
 	[ClientRpc]
 	public void Spawn(Vector2 Pos, uint equipment) 
 	{
+		if(time < 0) 
+		{
+			time = 10;
+		}
 		Active = false;
 		Target = Pos;
 		if(Contents != null)
@@ -23,8 +53,8 @@ public class ItemBox : NetworkBehaviour
 			NetworkServer.Destroy(Contents.gameObject);
 		}
 		Contents = NetworkIdentity.spawned[equipment].GetComponent<Equipment>();
+		//Debug.Log("Contents is " + Contents != null);
 
-		time = Random.Range(8, 12f);
 		transform.position = Pos + Vector2.up * 100;
 	}
 
@@ -51,8 +81,15 @@ public class ItemBox : NetworkBehaviour
 				{
 					Active = true;
 					transform.position = Target;
-					if(isServer)
-						time = Random.Range(100,30f);
+					if (isServer)
+					{
+						time = Random.Range(100, 30f);
+						SetTime(time);
+					}
+					else 
+					{
+						time = 60;
+					}
 				}
 			}
 		}
@@ -72,8 +109,9 @@ public class ItemBox : NetworkBehaviour
 					Active = false;
 					Contents.transform.position = transform.position;
 
-					if (isServer) 
+					if (isServer)
 					{
+						SetTime(time);
 						Contents.Abandand = true;
 						Contents.ExpireTime = 20;
 					}
@@ -81,6 +119,17 @@ public class ItemBox : NetworkBehaviour
 				}
 			}
 		}
+	}
+
+	public void SetTime(float Time) 
+	{
+		time = Time;
+		RpcSetTime(Time,DateTime.UtcNow.ToFileTimeUtc());
+	}
+	[ClientRpc]
+	public void RpcSetTime(float Time,long fileTime) 
+	{
+		time = Time - (float)(DateTime.UtcNow - DateTime.FromFileTimeUtc(fileTime)).TotalSeconds;
 	}
 
 	[Server]
@@ -94,6 +143,8 @@ public class ItemBox : NetworkBehaviour
 		Vector2 pos = Physics2D.Raycast(Random.insideUnitCircle * 100 + rel, Vector2.down).point;
 		if (pos == Vector2.zero)
 			return;
+		time = Random.Range(8, 12f);
+		SetTime(time);
 		Spawn(pos,Registry.Reg.SpawnRandomEquipment());
 	}
 
@@ -104,16 +155,17 @@ public class ItemBox : NetworkBehaviour
 			Mob M = col.GetComponent<Mob>();
 			if (M != null && M.B.isInteracting())
 			{
+				time = 10;
 				if (isServer)
 				{
 					//Contents.Randomize();
 					if (!Contents.Pickup(M))
 						return;
+					SetTime(time);
 				}
 				Contents = null;
 				Active = false;
 				Target += Vector2.up * 100;
-				time = 10;
 			}
 		}
 	}

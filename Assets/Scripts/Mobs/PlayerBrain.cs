@@ -22,6 +22,9 @@ public class PlayerBrain : Brain
 	public bool Activate;
 	public bool Interacting;
 	public bool Dropping;
+	public bool Shift;
+	public bool ALT;
+	public bool CTRL;
 
 	//public NetPlayer LocalPlayer;
 	public uint LocalPlayerID;
@@ -140,6 +143,22 @@ public class PlayerBrain : Brain
 				CmdDrop(Dropping);
 			}
 
+			if (Shift != Input.GetKey(KeyCode.LeftShift))
+			{
+				Shift = Input.GetKey(KeyCode.LeftShift);
+				CmdMod(Shift, 2);
+			}
+			if (ALT != Input.GetKey(KeyCode.LeftAlt))
+			{
+				ALT = Input.GetKey(KeyCode.LeftAlt);
+				CmdMod(ALT, 3);
+			}
+			if (CTRL != Input.GetKey(KeyCode.LeftControl))
+			{
+				CTRL = Input.GetKey(KeyCode.LeftControl);
+				CmdMod(CTRL, 4);
+			}
+
 			if (Time.time / updates > 1)
 			{
 				updates++;
@@ -198,7 +217,7 @@ public class PlayerBrain : Brain
 		Look = look;
 	}
 	[Command]
-	public void CmdSlot(int slot,int n)
+	public void CmdSlot(int slot, int n)
 	{
 		switch (n)
 		{
@@ -215,7 +234,7 @@ public class PlayerBrain : Brain
 				SlotP = slot;
 				break;
 		}
-		RpcSlot(slot,n);
+		RpcSlot(slot, n);
 	}
 	[ClientRpc(excludeOwner = true)]
 	public void RpcSlot(int slot, int n)
@@ -233,6 +252,39 @@ public class PlayerBrain : Brain
 				break;
 			case 4:
 				SlotP = slot;
+				break;
+		}
+	}
+	[Command]
+	public void CmdMod(bool state, int n)
+	{
+		switch (n)
+		{
+			case 2:
+				Shift = state;
+				break;
+			case 3:
+				ALT = state;
+				break;
+			case 4:
+				CTRL = state;
+				break;
+		}
+		RpcMod(state, n);
+	}
+	[ClientRpc(excludeOwner = true)]
+	public void RpcMod(bool state, int n)
+	{
+		switch (n)
+		{
+			case 2:
+				Shift = state;
+				break;
+			case 3:
+				ALT = state;
+				break;
+			case 4:
+				CTRL = state;
 				break;
 		}
 	}
@@ -284,7 +336,7 @@ public class PlayerBrain : Brain
 	public void CmdDrop(bool Drop)
 	{
 		Dropping = Drop;
-		RpcInteract(Drop);
+		RpcDrop(Drop);
 	}
 	[ClientRpc(excludeOwner = true)]
 	public void RpcDrop(bool Drop)

@@ -21,6 +21,7 @@ public class GrappleGun : DirectedEquipment
 	public float NormalRange;
 	public float MaxBounceMult;
 
+	[Command]
 	public override void Drop()
 	{
 		Abandand = true;

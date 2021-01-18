@@ -44,12 +44,12 @@ public class Mob : MonoBehaviour
 		if (Picked)
 			return false;
 		bool full = MaxItems <= Equipment.Count;
-		Debug.Log(full +" " + MaxItems + "<=" + Equipment.Count);
+		//Debug.Log(full +" " + MaxItems + "<=" + Equipment.Count);
 		if (full)
 			return Replace(E);
 		else
 		{
-			Debug.Log("Add");
+			//Debug.Log("Add");
 			switch (E)
 			{
 				case WeaponEquipment WE:
@@ -190,7 +190,7 @@ public class Mob : MonoBehaviour
 
 			if (B.isDropping())
 			{
-				if (!wasDropping && Input.GetKey(KeyCode.LeftShift))
+				if (!wasDropping && (B as PlayerBrain).Shift)
 				{
 					Equipment.Remove(DirectedEquipment[ActiveSlot]);
 					DirectedEquipment[ActiveSlot].Drop();
@@ -218,7 +218,7 @@ public class Mob : MonoBehaviour
 
 			if (B.isDropping())
 			{
-				if (!wasDropping && Input.GetKey(KeyCode.LeftAlt))
+				if (!wasDropping && (B as PlayerBrain).ALT)
 				{
 					Equipment.Remove(ActiveEquipment[ActiveSlot]);
 					ActiveEquipment[ActiveSlot].Drop();
@@ -308,7 +308,9 @@ public abstract class Equipment : NetworkBehaviour
 	public bool Abandand;
 	public float ExpireTime;
 	public abstract bool Pickup(Mob M);
-	public abstract void Drop();
+
+	[Command]
+	public virtual void Drop() { }
 	public abstract void Randomize();
 	public abstract string PrintStats();
 	//public abstract void SetStats(EquipmentStats stats);
@@ -323,9 +325,11 @@ public abstract class Equipment : NetworkBehaviour
 		if (Abandand) 
 		{
 			ExpireTime -= Time.deltaTime;
-			if(ExpireTime < 0) 
-			{
+			if (hasAuthority) 
 				Drop();
+			
+			if(isServer && ExpireTime < 0) 
+			{
 				NetworkServer.Destroy(gameObject);
 			}
 		}
@@ -363,4 +367,30 @@ public abstract class ActiveEquipment : Equipment
 public abstract class PasiveEquipment : Equipment
 {
 
+}
+
+public class Region : MonoBehaviour 
+{
+	public List<Region> Neighbors;
+	public List<PlayerBrain> Players;
+	public bool Active;
+
+	public void OnNeighborActivated() 
+	{
+		Active = true;
+	}
+
+	private void OnTriggerEnter2D(Collider2D col)
+	{
+		PlayerBrain PB = col.gameObject.GetComponent<PlayerBrain>();
+		if (PB != null) 
+		{
+			if(Players.Count == 0)
+				for(int i = 0; i < Neighbors.Count; i++) 
+				{
+					Neighbors[i].OnNeighborActivated();
+				}
+			Players.Add(PB);
+		}
+	}
 }
