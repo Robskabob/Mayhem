@@ -48,7 +48,7 @@ public class NetSystem : NetworkManager
 		PlayerBrain PB = Instantiate(GamePlayer);
 		NetworkServer.Spawn(PB.gameObject, conn);
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 25; i++)
 		{
 			ItemBox IB = Instantiate(ItemBox);
 			NetworkServer.Spawn(IB.gameObject);

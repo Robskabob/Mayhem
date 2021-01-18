@@ -13,8 +13,13 @@ public class PlayerBrain : Brain
 	}
 	public Vector2 Dir;
 	public Vector2 Look;
-	public int Slot;
+	public int SlotW;
+	public int SlotD;
+	public int SlotA;
+	public int SlotP;
 	public bool Shooting;
+	public bool ShootingSide;
+	public bool Activate;
 	public bool Interacting;
 	public bool Dropping;
 
@@ -71,21 +76,56 @@ public class PlayerBrain : Brain
 			if (Input.GetKeyDown(KeyCode.Tab))
 			{
 				if (Input.GetKey(KeyCode.LeftShift))
-					Slot -= 1;
+					SlotW -= 1;
 				else
-					Slot += 1;
+					SlotW += 1;
 
-				if (Slot >= Body.Equipment.Count)
-					Slot = 0;
-				else if (Slot < 0)
-					Slot = Body.Equipment.Count-1;
-				CmdSlot(Slot);
+				if (SlotW >= Body.WeaponEquipment.Count)
+					SlotW = 0;
+				else if (SlotW < 0)
+					SlotW = Body.WeaponEquipment.Count-1;
+				CmdSlot(SlotW,1);
+			}
+			int slot = -1;
+			if (Input.GetKeyDown(KeyCode.Alpha1)) slot = 0;
+			else if (Input.GetKeyDown(KeyCode.Alpha2)) slot = 1;
+			else if (Input.GetKeyDown(KeyCode.Alpha3)) slot = 2;
+			else if (Input.GetKeyDown(KeyCode.Alpha4)) slot = 3;
+			else if (Input.GetKeyDown(KeyCode.Alpha5)) slot = 4;
+			else if (Input.GetKeyDown(KeyCode.Alpha6)) slot = 5;
+			else if (Input.GetKeyDown(KeyCode.Alpha7)) slot = 6;
+			else if (Input.GetKeyDown(KeyCode.Alpha8)) slot = 7;
+			else if (Input.GetKeyDown(KeyCode.Alpha9)) slot = 8;
+			else if (Input.GetKeyDown(KeyCode.Alpha0)) slot = 9;
+
+			if(slot != -1)
+			{
+				if (Input.GetKey(KeyCode.LeftShift) && slot < Body.DirectedEquipment.Count)
+					SlotD = slot;
+				else if (Input.GetKey(KeyCode.LeftAlt) && slot < Body.ActiveEquipment.Count)
+					SlotA = slot;
+				else if (Input.GetKey(KeyCode.LeftControl) && slot < Body.PassiveEquipment.Count)
+					SlotP = slot;
+				else if (slot < Body.WeaponEquipment.Count)
+					SlotW = slot;
 			}
 
 			if (Shooting != Input.GetMouseButton(0))
 			{
 				Shooting = Input.GetMouseButton(0);
 				CmdShoot(Shooting);
+			}
+
+			if (ShootingSide != Input.GetMouseButton(1))
+			{
+				ShootingSide = Input.GetMouseButton(1);
+				CmdShootS(ShootingSide);
+			}
+
+			if (Activate != Input.GetKey(KeyCode.Space))
+			{
+				Activate = Input.GetKey(KeyCode.Space);
+				CmdActivate(Activate);
 			}
 
 			if (Interacting != Input.GetKey(KeyCode.E))
@@ -107,6 +147,17 @@ public class PlayerBrain : Brain
 				CmdPos(transform.position, Body.rb.velocity);
 			}
 		}
+	}
+	public override void OnDrop()
+	{
+		if (SlotW >= Body.WeaponEquipment.Count)
+			SlotW = 0;
+		if (SlotD >= Body.DirectedEquipment.Count)
+			SlotD = 0;
+		if (SlotA >= Body.ActiveEquipment.Count)
+			SlotA = 0;
+		if (SlotP >= Body.PassiveEquipment.Count)
+			SlotP = 0;
 	}
 
 	int updates;
@@ -147,15 +198,43 @@ public class PlayerBrain : Brain
 		Look = look;
 	}
 	[Command]
-	public void CmdSlot(int slot)
+	public void CmdSlot(int slot,int n)
 	{
-		Slot = slot;
-		RpcSlot(slot);
+		switch (n)
+		{
+			case 1:
+				SlotW = slot;
+				break;
+			case 2:
+				SlotD = slot;
+				break;
+			case 3:
+				SlotA = slot;
+				break;
+			case 4:
+				SlotP = slot;
+				break;
+		}
+		RpcSlot(slot,n);
 	}
 	[ClientRpc(excludeOwner = true)]
-	public void RpcSlot(int slot)
+	public void RpcSlot(int slot, int n)
 	{
-		Slot = slot;
+		switch (n)
+		{
+			case 1:
+				SlotW = slot;
+				break;
+			case 2:
+				SlotD = slot;
+				break;
+			case 3:
+				SlotA = slot;
+				break;
+			case 4:
+				SlotP = slot;
+				break;
+		}
 	}
 	[Command]
 	public void CmdShoot(bool shoot)
@@ -167,6 +246,28 @@ public class PlayerBrain : Brain
 	public void RpcShoot(bool shoot)
 	{
 		Shooting = shoot;
+	}
+	[Command]
+	public void CmdShootS(bool shoot)
+	{
+		ShootingSide = shoot;
+		RpcShootS(shoot);
+	}
+	[ClientRpc(excludeOwner = true)]
+	public void RpcShootS(bool shoot)
+	{
+		ShootingSide = shoot;
+	}
+	[Command]
+	public void CmdActivate(bool ac)
+	{
+		Activate = ac;
+		RpcActivate(ac);
+	}
+	[ClientRpc(excludeOwner = true)]
+	public void RpcActivate(bool ac)
+	{
+		Activate = ac;
 	}
 	[Command]
 	public void CmdInteract(bool Interact)
@@ -202,9 +303,21 @@ public class PlayerBrain : Brain
 		return Look;
 	}
 
-	public override int GetSlot()
+	public override int GetSlotW()
 	{
-		return Slot;
+		return SlotW;
+	}
+	public override int GetSlotD()
+	{
+		return SlotD;
+	}
+	public override int GetSlotA()
+	{
+		return SlotA;
+	}
+	public override int GetSlotP()
+	{
+		return SlotP;
 	}
 
 	public override bool isShooting()
@@ -236,5 +349,15 @@ public class PlayerBrain : Brain
 		transform.position = V;
 		Body.Health = Body.MaxHealth;
 		Body.Shield = Body.MaxShield;
+	}
+
+	public override bool isShootingSide()
+	{
+		return ShootingSide;
+	}
+
+	public override bool isActivate()
+	{
+		return Activate;
 	}
 }

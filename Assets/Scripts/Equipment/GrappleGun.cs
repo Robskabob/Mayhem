@@ -2,7 +2,7 @@
 using UnityEngine;
 using Mirror;
 
-public class GrappleGun : Equipment
+public class GrappleGun : DirectedEquipment
 {
 	//public DistanceJoint2D Rope;
 	public Rigidbody2D rb;
@@ -23,6 +23,8 @@ public class GrappleGun : Equipment
 
 	public override void Drop()
 	{
+		Abandand = true;
+		ExpireTime = 30;
 		transform.parent = null;
 		rb = null;
 		RpcDrop();
@@ -34,31 +36,37 @@ public class GrappleGun : Equipment
 		rb = null;
 	}
 
-	public override void Pickup(Mob M)
+	public override bool Pickup(Mob M)
 	{
+		if (!M.PickUp(this))
+			return false;
+		Abandand = false;
 		transform.parent = M.transform;
 		transform.localPosition = Vector3.zero;
 		rb = M.rb;
 
 		netIdentity.AssignClientAuthority(M.B.netIdentity.connectionToClient);
-		if(isServerOnly)
-			M.Equipment.Add(this);
 
 		RpcPickup(M.B.netId);
+		return true;
 	}
 	[ClientRpc]
 	public void RpcPickup(uint MobId)
 	{
-		Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
-		transform.parent = M.transform;
-		transform.localPosition = Vector3.zero;
-		rb = M.rb;
-		M.Equipment.Add(this);
+		if (!isServer)
+		{
+			Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
+			transform.parent = M.transform;
+			transform.localPosition = Vector3.zero;
+			rb = M.rb;
+			if (!M.PickUp(this))
+				Debug.LogError("Cant pick up but valid on Server?");
+		}
 	}
 
 	public override void Use(Vector2 pos)
 	{
-		if(inUse == false) 
+		if(inUse == false && !Latched) 
 		{
 			LineDistance = 0;
 			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance);
@@ -75,15 +83,17 @@ public class GrappleGun : Equipment
 			//Rope.enabled = true;
 			RopeVis.enabled = true;
 			FullDistance = r.distance;
-			CmdGrapple(r.point,FullDistance);
+			if (hasAuthority)
+				CmdGrapple(r.point,FullDistance);
 			//Rope.distance = Vector2.Distance(transform.position, Pos);
 			//Rope.anchor = Pos;// - (Vector2)transform.position;
 			//Rope.connectedAnchor = Pos;
 			//Rope.target = Pos;
+			Latched = true;
+			inUse = true;
 		}
 		//Rope.distance -= Time.deltaTime * Real;
 		inUseLast = true;
-		inUse = true;
 	}
 
 	[Command]
@@ -174,24 +184,24 @@ public class GrappleGun : Equipment
 
 		}
 	}
-	private void Update()
+	public bool Latched;
+	protected override void Update()
 	{
-		if (inUse)
+		base.Update();
+		if (!inUse)
 		{
-			if (!inUseLast)
-			{
-				//Rope.enabled = false;
-				RopeVis.enabled = false;
-				inUse = false;
-			}
-			//Distance = Vector2.Distance(transform.position, Pos);
-			////if(Dist < Distance) 
-			////{
-			//	rb.AddForce((Pos - (Vector2)transform.position) * Force * (Distance - Dist));
-			////}
-
+			RopeVis.enabled = false;
 		}
+		if (!inUseLast)
+		{
+			//Rope.enabled = false;
+			RopeVis.enabled = false;
+			inUse = false;
+			Latched = false;
+		}
+
 		inUseLast = false;
+		
 		Vector3[] LineArray = new Vector3[PosStack.Count+1];
 		LineArray[0] = transform.position;
 		for(int i = 0; i < PosStack.Count; i++) 
@@ -204,11 +214,11 @@ public class GrappleGun : Equipment
 	public override string PrintStats()
 	{
 		return
-			$"Max Dist {MaxDistance}\n" +
-			$"Force {Force}\n" +
-			$"R1 {BounceRange}\n" +
-			$"R2 {NormalRange}\n" +
-			$"Mult {MaxBounceMult}";
+			$"Max Dist {MaxDistance:f}\n" +
+			$"Force {Force:f}\n" +
+			$"Health {Health:f} / {MaxHealth:f} \n" +
+			$"R {BounceRange:f} | {NormalRange:f}\n" +
+			$"Mult {MaxBounceMult:f}";
 	}
 
 	public override void Randomize()

@@ -1,7 +1,7 @@
 ﻿using Mirror;
 using UnityEngine;
 
-public class Gun : Equipment
+public class Gun : WeaponEquipment
 {
 	public float ReloadTime;
 	public float FireTime;
@@ -20,6 +20,8 @@ public class Gun : Equipment
 	public Mob Holder;
 	public override void Drop()
 	{
+		Abandand = true;
+		ExpireTime = 30;
 		netIdentity.RemoveClientAuthority();
 		transform.parent = null;
 		Holder = null;
@@ -32,27 +34,33 @@ public class Gun : Equipment
 		Holder = null;
 	}
 
-	public override void Pickup(Mob M)
+	public override bool Pickup(Mob M)
 	{
+		if (!M.PickUp(this))
+			return false;
+		Abandand = false;
 		transform.parent = M.transform;
 		transform.localPosition = Vector3.zero;
 		Holder = M;
 
 		netIdentity.AssignClientAuthority(M.B.netIdentity.connectionToClient);
-		if (isServerOnly)
-			M.Equipment.Add(this);
 
 		RpcPickup(M.B.netId);
+		return true;
 	}
 
 	[ClientRpc]
 	public void RpcPickup(uint MobId)
 	{
-		Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
-		transform.parent = M.transform;
-		transform.localPosition = Vector3.zero;
-		Holder = M;
-		M.Equipment.Add(this);
+		if (!isServer)
+		{
+			Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
+			transform.parent = M.transform;
+			transform.localPosition = Vector3.zero;
+			Holder = M;
+			if (!M.PickUp(this))
+				Debug.LogError("Cant pick up but valid on Server?");
+		}
 	}
 
 	public override void Use(Vector2 Pos)
@@ -73,30 +81,32 @@ public class Gun : Equipment
 		}
 	}
 
-	void Fire(Vector2 Pos)
+	protected virtual void Fire(Vector2 Pos)
 	{
 		Projectile P = Instantiate(Projectile);
 		P.Shoot(Holder, Pos - (Vector2)transform.position, ProjectileData);
 	}
 
-	private void Update()
+	protected override void Update()
 	{
+		base.Update();
 		waitTime -= Time.deltaTime;
 	}
 
 	public override void Randomize()
 	{
-		FireTime = Random.Range(.005f, 1);
-		ReloadTime = Random.Range(FireTime*2, 5);
+		FireTime = Random.Range(.05f, 1) * Random.Range(.5f, 2f);
+		ReloadTime = Random.Range(FireTime*2, Random.Range(FireTime * 2, 5));
 
 		Clip = (int)(Random.Range(.5f, 5) / FireTime);
 		if (Clip < 1)
 			Clip = 1;
 
 		ProjectileData.Impulse = Random.Range(10, 1000f) * FireTime;
-		ProjectileData.LifeTime = (Random.Range(1, 100f) * 100) / ProjectileData.Impulse;
+		ProjectileData.LifeTime = (Random.Range(1, 50f) * 100) / ProjectileData.Impulse;
 		ProjectileData.Speed = Random.Range(0, 5f) * ReloadTime;
 		ProjectileData.Dammage = (Random.Range(5, 30f)) / Clip * ReloadTime;
+		ProjectileData.Health = Random.Range(1, 100f);
 
 		SetStats(new GunStats(this));
 	}
@@ -110,11 +120,11 @@ public class Gun : Equipment
 	public override string PrintStats()
 	{
 		return
-			$"Damage {ProjectileData.Dammage}\n" +
-			$"Fire Rate {FireTime}\n" +
-			$"Reload {ReloadTime}\n" +
-			$"Impulse {ProjectileData.Impulse}\n" +
-			$"Clip {Clip}";
+			$"Damage {ProjectileData.Dammage:f}\n" +
+			$"Fire Rate {FireTime:f}\n" +
+			$"Reload {ReloadTime:f} | {waitTime:f}\n" +
+			$"Speed {ProjectileData.Impulse:f} | {ProjectileData.Speed:f}\n" +
+			$"Clip {clip} / {Clip}";
 	}
 
 	public struct GunStats
@@ -128,6 +138,7 @@ public class Gun : Equipment
 		public float LifeTime;
 		public float Speed;
 		public float Dammage;
+		public float Health;
 
 		public GunStats(Gun Base)
 		{
@@ -140,6 +151,7 @@ public class Gun : Equipment
 			LifeTime = Base.ProjectileData.LifeTime;
 			Speed = Base.ProjectileData.Speed;
 			Dammage = Base.ProjectileData.Dammage;
+			Health = Base.ProjectileData.Health;
 		}
 
 		public void Set(Gun Base)
@@ -153,6 +165,7 @@ public class Gun : Equipment
 			Base.ProjectileData.LifeTime = LifeTime;
 			Base.ProjectileData.Speed = Speed;
 			Base.ProjectileData.Dammage = Dammage;
+			Base.ProjectileData.Health = Health;
 		}
 	}
 }

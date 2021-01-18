@@ -5,14 +5,17 @@ public class Projectile : MonoBehaviour
 	public Rigidbody2D rb;
 	public Vector2 Dir;
 	public Mob Owner;
+	public float Health;
 
 	public ProjectileData Data;
 	public float LifeTime;
 
 	public void Shoot(Mob owner,Vector2 dir ,ProjectileData data) 
 	{
+		GetComponent<SpriteRenderer>().color = owner.GetComponent<SpriteRenderer>().color;
 		Owner = owner;
 		LifeTime = data.LifeTime;
+		Health = data.Health;
 		Data = data;
 		Dir = dir.normalized;
 		transform.right = Dir;
@@ -24,16 +27,24 @@ public class Projectile : MonoBehaviour
 	{
 		LifeTime -= Time.fixedDeltaTime;
 		rb.AddForce(Data.Speed * Dir * Time.fixedDeltaTime);
-		if (LifeTime < 0 || (LifeTime < (Data.LifeTime*.9f) && rb.velocity.magnitude < .5f))
+		if (LifeTime < 0 || Health < 0 || (LifeTime < (Data.LifeTime-.5f) && rb.velocity.magnitude < 1f))
 			Destroy(gameObject);
 	}
 
 	private void OnCollisionEnter2D(Collision2D col)
 	{
-		if(col.gameObject.GetComponent<Mob>() is Mob M) 
+		if (col.gameObject.GetComponent<Mob>() is Mob M)
 		{
 			M.Dammage(Data.Dammage);
 			LifeTime--;
+		}
+	}
+	private void OnCollisionStay2D(Collision2D col)
+	{
+		if (col.gameObject.GetComponent<Projectile>() is Projectile P)
+		{
+			if(P.Owner != Owner)
+				P.Health -= Data.Dammage;
 		}
 	}
 }
@@ -46,4 +57,16 @@ public class ProjectileData
 	public float Impulse;
 	public float Speed;
 	public float Dammage;
+	public float Health;
+
+	public ProjectileData Clone() 
+	{
+		ProjectileData PD = new ProjectileData();
+		PD.LifeTime = LifeTime;
+		PD.Impulse = Impulse;
+		PD.Speed = Speed;
+		PD.Dammage = Dammage;
+		PD.Health = Health;
+		return PD;
+	}
 }

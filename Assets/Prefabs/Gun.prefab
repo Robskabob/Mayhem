@@ -48,11 +48,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  Abandand: 0
+  ExpireTime: 0
   ReloadTime: 1
   FireTime: 0.1
   waitTime: 0
   Clip: 5
-  clip: 5
+  clip: 0
   Projectile: {fileID: 1627303036508749383, guid: d8b48f31ae6816341b4b6a4171b41691,
     type: 3}
   ProjectileData:
@@ -60,6 +62,7 @@ MonoBehaviour:
     Impulse: 500
     Speed: 5
     Dammage: 5
+    Health: 0
   Holder: {fileID: 0}
 --- !u!114 &4910802673673777536
 MonoBehaviour:
@@ -129,8 +132,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8870729648356249997}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.25, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.2, z: 1}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0}
+  m_LocalScale: {x: 1.5, y: 0.2, z: 1}
   m_Children: []
   m_Father: {fileID: 8870729647989547980}
   m_RootOrder: 0

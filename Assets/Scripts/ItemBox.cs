@@ -18,9 +18,13 @@ public class ItemBox : NetworkBehaviour
 	{
 		Active = false;
 		Target = Pos;
+		if(Contents != null)
+		{
+			NetworkServer.Destroy(Contents.gameObject);
+		}
 		Contents = NetworkIdentity.spawned[equipment].GetComponent<Equipment>();
 
-		time = 10;
+		time = Random.Range(8, 12f);
 		transform.position = Pos + Vector2.up * 100;
 	}
 
@@ -61,11 +65,19 @@ public class ItemBox : NetworkBehaviour
 			}
 			else
 			{
-				if (time < 0 && isServer)
+				if (time < 0)
 				{
 					Target += Vector2.up * 100;
-					Contents = null;
+					time = 10;
 					Active = false;
+					Contents.transform.position = transform.position;
+
+					if (isServer) 
+					{
+						Contents.Abandand = true;
+						Contents.ExpireTime = 20;
+					}
+					Contents = null;
 				}
 			}
 		}
@@ -87,13 +99,17 @@ public class ItemBox : NetworkBehaviour
 
 	private void OnTriggerStay2D(Collider2D col)
 	{
-		if (isServer && Active)
+		if (Active)
 		{
 			Mob M = col.GetComponent<Mob>();
 			if (M != null && M.B.isInteracting())
 			{
-				//Contents.Randomize();
-				Contents.Pickup(M);
+				if (isServer)
+				{
+					//Contents.Randomize();
+					if (!Contents.Pickup(M))
+						return;
+				}
 				Contents = null;
 				Active = false;
 				Target += Vector2.up * 100;
