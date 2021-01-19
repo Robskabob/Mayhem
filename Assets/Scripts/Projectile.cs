@@ -41,6 +41,11 @@ public class Projectile : MonoBehaviour
 	}
 	private void OnCollisionStay2D(Collision2D col)
 	{
+		if (col.gameObject.GetComponent<Mob>() is Mob M)
+		{
+			LifeTime--;
+		}
+
 		if (col.gameObject.GetComponent<Projectile>() is Projectile P)
 		{
 			if(P.Owner != Owner)

@@ -350,7 +350,7 @@ public abstract class Equipment : NetworkBehaviour
 
 public abstract class WeaponEquipment : Equipment
 {
-	public virtual float Damage { get; set; }
+	//public virtual float Damage { get; set; }
 	public abstract void Use(Vector2 Pos);
 
 }
@@ -367,30 +367,4 @@ public abstract class ActiveEquipment : Equipment
 public abstract class PasiveEquipment : Equipment
 {
 
-}
-
-public class Region : MonoBehaviour 
-{
-	public List<Region> Neighbors;
-	public List<PlayerBrain> Players;
-	public bool Active;
-
-	public void OnNeighborActivated() 
-	{
-		Active = true;
-	}
-
-	private void OnTriggerEnter2D(Collider2D col)
-	{
-		PlayerBrain PB = col.gameObject.GetComponent<PlayerBrain>();
-		if (PB != null) 
-		{
-			if(Players.Count == 0)
-				for(int i = 0; i < Neighbors.Count; i++) 
-				{
-					Neighbors[i].OnNeighborActivated();
-				}
-			Players.Add(PB);
-		}
-	}
 }

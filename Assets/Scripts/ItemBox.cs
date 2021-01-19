@@ -35,8 +35,12 @@ public class ItemBox : NetworkBehaviour
 		time = Time - (float)(DateTime.UtcNow - DateTime.FromFileTimeUtc(fileTime)).TotalSeconds;
 		Active = active;
 		Target = target;
-		if(EqId != 0)
+		if (EqId != 0)
+		{
 			Contents = NetworkIdentity.spawned[EqId].GetComponent<Equipment>();
+			Contents.transform.SetParent(transform);
+			Contents.transform.localPosition = Vector3.up;
+		}
 	}
 
 	[ClientRpc]
@@ -53,6 +57,8 @@ public class ItemBox : NetworkBehaviour
 			NetworkServer.Destroy(Contents.gameObject);
 		}
 		Contents = NetworkIdentity.spawned[equipment].GetComponent<Equipment>();
+		Contents.transform.SetParent(transform);
+		Contents.transform.localPosition = Vector3.up;
 		//Debug.Log("Contents is " + Contents != null);
 
 		transform.position = Pos + Vector2.up * 100;
@@ -108,6 +114,7 @@ public class ItemBox : NetworkBehaviour
 					time = 10;
 					Active = false;
 					Contents.transform.position = transform.position;
+					Contents.transform.SetParent(null);
 
 					if (isServer)
 					{
