@@ -16,10 +16,12 @@ public class NetSystem : NetworkManager
 
 	public List<Equipment> Equipment;
 	public ItemBox ItemBox;
+	public PlatBrain PlatGuy;
 
 	public override void Start()
 	{
 		Registry.Reg.Equipment = Equipment;
+		ClientScene.RegisterPrefab(GamePlayer.gameObject, SpawnPlayerBrain, UnSpawn);
 		NetworkServer.RegisterHandler<JoinMessage>(OnJoinGame);
 		NetworkClient.RegisterHandler<JoinedMessage>(OnJoinedGame);
 		base.Start();
@@ -54,6 +56,12 @@ public class NetSystem : NetworkManager
 			NetworkServer.Spawn(IB.gameObject);
 			IB.Randomize();
 		}
+		for (int i = 0; i < 25; i++)
+		{
+			PlatBrain PlB = Instantiate(PlatGuy);
+			NetworkServer.Spawn(PlB.gameObject);
+			PlB.Die();
+		}
 
 		//Players.Add(NP.netId, NP);
 		//PlayerBrains.Add(NP.netId, PB);
@@ -79,6 +87,29 @@ public class NetSystem : NetworkManager
 		Players.Add(Join.id, NP);
 		PlayerBrains.Add(Join.id, PB);
 		Debug.Log("Completed");
+	}
+
+	GameObject SpawnPlayerBrain(SpawnMessage msg) 
+	{
+		PlayerBrain PB = Instantiate(GamePlayer);
+
+		if (PB.hasAuthority) 
+		{
+			Mob M = PB.gameObject.AddComponent<Mob>();
+			M.B = PB;
+		}
+		else 
+		{
+			NetMob NM = PB.gameObject.AddComponent<NetMob>();
+			NM.B = PB;
+		}
+
+		return PB.gameObject;
+	}
+
+	void UnSpawn(GameObject O) 
+	{
+		Destroy(O);
 	}
 
 	public struct JoinMessage : NetworkMessage

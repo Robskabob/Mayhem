@@ -88,7 +88,7 @@ public class Mob : MonoBehaviour
 			Health -= value;
 	}
 
-	private void FixedUpdate()
+	protected virtual void FixedUpdate()
 	{
 		Count = Collisions.Count;
 		Vector2 Dir = B.GetDir();
@@ -177,7 +177,7 @@ public class Mob : MonoBehaviour
 		return true;
 	}
 
-	private void Update()
+	protected virtual void Update()
 	{
 		if (!B.isInteracting())
 			Picked = false;
@@ -300,6 +300,89 @@ public class Mob : MonoBehaviour
 	{
 		if (col.gameObject.GetComponent<Projectile>() == null)
 			Collisions.Remove(col);
+	}
+}
+
+public class MadMob : Mob
+{
+
+}
+
+public class NetMob : Mob
+{
+	public Vector2 TargPos;
+	public Vector2 TargVel;
+	public float strngth;
+	public float UpdateInterval;
+	public float CorrectionThreshold;
+
+	protected override void FixedUpdate()
+	{
+		base.FixedUpdate();
+		Vector2 posdiff = rb.position - TargPos;
+		Vector2 veldiff = rb.velocity - TargVel;
+
+		if (posdiff.magnitude > CorrectionThreshold)
+		{
+			rb.velocity += posdiff * Time.fixedDeltaTime;
+		}
+		if (veldiff.magnitude > CorrectionThreshold)
+		{
+			rb.velocity += veldiff * Time.fixedDeltaTime;
+		}
+	}
+
+	protected override void Update()
+	{
+		if (!B.isInteracting())
+			Picked = false;
+
+		int ActiveSlot = B.GetSlotD();
+
+		if (DirectedEquipment.Count > 0)
+		{
+			DirectedEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+
+			if (B.isShootingSide())
+			{
+				DirectedEquipment[ActiveSlot].Use(B.GetLook());
+			}
+		}
+
+		ActiveSlot = B.GetSlotA();
+
+		if (ActiveEquipment.Count > 0)
+		{
+			if (B.isActivate())
+			{
+				ActiveEquipment[ActiveSlot].Use();
+			}
+		}
+
+		ActiveSlot = B.GetSlotW();
+
+		if (WeaponEquipment.Count > 0)
+		{
+			WeaponEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+
+			if (B.isShooting())
+			{
+				WeaponEquipment[ActiveSlot].Use(B.GetLook());
+			}
+		}
+
+
+		if (Shield < MaxShield)
+		{
+			if (ShieldWait < 0)
+			{
+				Shield += Time.deltaTime * ShieldRate;
+				if (Shield > MaxShield)
+					Shield = MaxShield;
+			}
+			else
+				ShieldWait -= Time.deltaTime;
+		}
 	}
 }
 

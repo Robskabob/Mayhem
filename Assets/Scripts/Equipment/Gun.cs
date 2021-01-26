@@ -212,10 +212,10 @@ public abstract class LaserBase : WeaponEquipment
 	{
 		if (!M.PickUp(this))
 			return false;
+		Abandand = false;
 		Color C = M.GetComponent<SpriteRenderer>().color;
 		LaserVis.endColor = C;
 		LaserVis.startColor = C;
-		Abandand = false;
 		transform.parent = M.transform;
 		transform.localPosition = Vector3.zero;
 		Holder = M;
@@ -229,6 +229,7 @@ public abstract class LaserBase : WeaponEquipment
 	[ClientRpc]
 	public void RpcPickup(uint MobId)
 	{
+		Abandand = false;
 		if (!isServer)
 		{
 			Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
@@ -279,7 +280,7 @@ public abstract class LaserBase : WeaponEquipment
 				}
 				if (r.collider.GetComponent<Mob>() is Mob M)
 				{
-					M.Health -= Damage * Time.deltaTime;
+					M.Dammage(Damage * Time.deltaTime);
 				}
 			}
 		}
