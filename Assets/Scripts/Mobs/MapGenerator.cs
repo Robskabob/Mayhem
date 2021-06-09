@@ -54,7 +54,7 @@ public class MapGenerator : MonoBehaviour
 
 		for (int i = 0; i < Base.PlatformCandidates.Length; i++)
 		{
-			Debug.Log(Base.PlatformCandidates[i]);
+			//Debug.Log(Base.PlatformCandidates[i]);
 			Vector2 plat = Base.PlatformCandidates[i];
 			float distx = 99;
 			float disty = 99;

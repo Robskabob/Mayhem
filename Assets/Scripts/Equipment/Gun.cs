@@ -53,6 +53,7 @@ public class Gun : WeaponEquipment
 	[ClientRpc]
 	public void RpcPickup(uint MobId)
 	{
+		Abandand = false;
 		if (!isServer)
 		{
 			Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;

@@ -66,3 +66,8 @@ public class Hud : MonoBehaviour
 		}
 	}
 }
+
+public class StatGroup 
+{
+
+}

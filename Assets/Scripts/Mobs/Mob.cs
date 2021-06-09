@@ -16,6 +16,7 @@ public class Mob : MonoBehaviour
 	public float ShieldRate;
 	public float ShieldTime;
 	public float ShieldWait;
+
 	public float MinSpeed;
 	public float Speed;
 	public float AirSpeed;
@@ -408,10 +409,14 @@ public abstract class Equipment : NetworkBehaviour
 		if (Abandand) 
 		{
 			ExpireTime -= Time.deltaTime;
-			if (hasAuthority) 
+
+			if (hasAuthority)
+			{
 				Drop();
-			
-			if(isServer && ExpireTime < 0) 
+				Debug.LogError("Abandoned Held Item");
+			}
+
+			if (isServer && ExpireTime < 0) 
 			{
 				NetworkServer.Destroy(gameObject);
 			}
