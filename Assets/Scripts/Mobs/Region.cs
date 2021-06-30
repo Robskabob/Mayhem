@@ -23,29 +23,80 @@ public class Region : MonoBehaviour
 	public SpriteRenderer SR;
 	public Region[] Neighbors = new Region[6];
 	public List<PlayerBrain> Players;
+	public List<PlatBrain> Mobs;
 	public bool Active;
-	public bool firstload;
+	public int loadLevel;
 
 	public List<Transform> Objects;
+	public Transform Contents;
 	public MapGenerator.Chunk chunk;
 
 	private void Start()
 	{
-		if (Defualt == null)
-			Defualt = OriginDefualt;
+		chunk = MapGen.GetNewChunk(Vector2Int.RoundToInt(transform.position));
+
 		if(!GlobalRegions.ContainsKey(Vector2Int.RoundToInt(transform.position)))
 			GlobalRegions.Add(Vector2Int.RoundToInt(transform.position), this);
+		
+		if (Defualt == null)
+		{
+			Defualt = OriginDefualt;
+			for (int i = 0; i < Neighbors.Length; i++)
+			{
+				if (Neighbors[i] == null)
+				{
+					GeneateNew(i);
 
-		chunk = MapGen.GetNewChunk(Vector2Int.RoundToInt(transform.position));
+					for (int j = 0; j < Neighbors.Length; j++)
+					{
+						if (Neighbors[i].Neighbors[j] == null)
+						{
+							Neighbors[i].GeneateNew(j);
+						}
+						else
+							Debug.DrawLine(transform.position, Neighbors[i].Neighbors[j].transform.position, Color.green, 5);
+					}
+
+					Neighbors[i].MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref chunk, Neighbors[i].GetChunkNeighbors(),Neighbors[i]);
+				}
+				else
+					Debug.DrawLine(transform.position, Neighbors[i].transform.position, Color.green, 5);
+			}
+
+			MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref chunk, GetChunkNeighbors(),this);
+		}
 	}
 
-	public void OnNeighborActivated()
+	public void OnActivate() 
 	{
 		Active = true;
-		SR.color = new Color(0,.5f,0);
-		if (!firstload)
+		SR.color = new Color(0, .5f, 0);
+		Contents.gameObject.SetActive(true);
+
+		for (int i = 0; i < Mobs.Count; i++) 
 		{
-			firstload = true;
+			Mobs[i].enabled = true;
+			Mobs[i].Body.rb.simulated = true;
+		}
+	}
+	public void OnDeActivate()
+	{
+		Active = false;
+		SR.color = new Color(.5f, 0, 0);
+		Contents.gameObject.SetActive(false);
+
+		for (int i = 0; i < Mobs.Count; i++)
+		{
+			Mobs[i].Body.rb.simulated = false;
+			Mobs[i].enabled = false;
+		}
+	}
+	public void OnNeighborActivated()
+	{
+		OnActivate();
+		if (loadLevel < 1)
+		{
+			loadLevel ++;
 			FirstEnter();
 		}
 	}
@@ -60,8 +111,7 @@ public class Region : MonoBehaviour
 				return;
 			}
 		}
-		Active = false;
-		SR.color = new Color(.5f, 0, 0);
+		OnDeActivate();
 	}
 
 	private void OnTriggerEnter2D(Collider2D col)
@@ -87,6 +137,18 @@ public class Region : MonoBehaviour
 			}
 			else
 				Players.Add(PB);
+			return;
+		}
+		PlatBrain PlB = col.gameObject.GetComponent<PlatBrain>();
+		if (PlB != null)
+		{
+			Mobs.Add(PlB);
+			if (!Active)
+			{
+				PlB.enabled = false;
+				PlB.Body.rb.simulated = false;
+			}
+			return;
 		}
 	}
 	private void OnTriggerExit2D(Collider2D col)
@@ -110,6 +172,13 @@ public class Region : MonoBehaviour
 						Neighbors[i].OnNeighborDeActivated();
 				}
 			}
+			return;
+		}
+		PlatBrain PlB = col.gameObject.GetComponent<PlatBrain>();
+		if (PlB != null)
+		{
+			Mobs.Remove(PlB);
+			return;
 		}
 	}
 
@@ -137,7 +206,7 @@ public class Region : MonoBehaviour
 		else if(Vector2.Distance(Players[0].transform.position,transform.position) > 300)
 		{
 			Debug.LogError("Too far but has Player?");
-			firstload = false;
+			loadLevel = 0;
 			return;
 		}
 		for (int i = 0; i < Neighbors.Length; i++)
@@ -150,7 +219,7 @@ public class Region : MonoBehaviour
 			Debug.DrawLine(transform.position, Neighbors[i].transform.position,Color.green,5);
 		}
 
-		MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position),ref chunk, GetChunkNeighbors());
+		MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position),ref chunk, GetChunkNeighbors(),this);
 	}
 
 	public void GeneateNew(int slot) 
@@ -161,9 +230,11 @@ public class Region : MonoBehaviour
 			R = Instantiate(Defualt, transform.position + (Vector3)Offsets[slot], Quaternion.identity, transform.parent);
 			GlobalRegions.Add(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]),R);
 			R.Active = false;
-			R.firstload = false;
+			R.Objects = new List<Transform>();
+			R.loadLevel = 0;
 			R.Neighbors = new Region[6];
 			R.Players = new List<PlayerBrain>();
+			R.Mobs = new List<PlatBrain>();
 			R.SR.color = Color.gray;
 			SR.color = Color.yellow;
 		}

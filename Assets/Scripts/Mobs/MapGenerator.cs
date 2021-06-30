@@ -46,7 +46,7 @@ public class MapGenerator : MonoBehaviour
 
 		return C;
 	}
-	public void ResolveChunk(Vector2Int Pos,ref Chunk Base, Chunk[] Neighbors)
+	public void ResolveChunk(Vector2Int Pos,ref Chunk Base, Chunk[] Neighbors, Region region)
 	{
 		Random.InitState(GetSeed(Pos));
 
@@ -91,13 +91,12 @@ public class MapGenerator : MonoBehaviour
 
 					if (distx < (1 / Density) || disty < (1 / Density))
 					{
-
 						continue;
 					}
 				}
 			}
 
-			Instantiate(Platform,Base.PlatformCandidates[i],Quaternion.identity);
+			Instantiate(Platform,Base.PlatformCandidates[i],Quaternion.identity,region.Contents.transform);
 		}
 	}
 

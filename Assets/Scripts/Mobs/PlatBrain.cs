@@ -16,6 +16,23 @@ public class PlatBrain : Brain
 			wait = time;
 		}
 		wait -= Time.fixedDeltaTime;
+		if((Time.frameCount + GetHashCode()) % 30 == 0) 
+		{
+			foreach(PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
+			{
+				if (Vector2.Distance(PB.transform.position, transform.position) < 100)
+					return;
+			}
+			Die();
+		}
+	}
+
+	private void OnDisable()
+	{
+		Die();
+		gameObject.SetActive(true);
+		enabled = true;
+		Body.rb.simulated = true;
 	}
 
 	public override void Die()

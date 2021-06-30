@@ -59,6 +59,7 @@ public class NetSystem : NetworkManager
 		for (int i = 0; i < 25; i++)
 		{
 			PlatBrain PlB = Instantiate(PlatGuy);
+			PlB.transform.position = new Vector3(300,300,0)*Random.insideUnitCircle;
 			NetworkServer.Spawn(PlB.gameObject);
 			PlB.Die();
 		}

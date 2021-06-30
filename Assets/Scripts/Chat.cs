@@ -17,7 +17,7 @@ public class Chat : MonoBehaviour
 	private void Start()
 	{
 		IF.onEndEdit.AddListener((v) => PlayerClient.PC.NP.CmdChat(v));
-		Debug.Log(typeof(PlayerBrain).AssemblyQualifiedName +"\n"+ typeof(GrappleGun).AssemblyQualifiedName);
+		//Debug.Log(typeof(PlayerBrain).AssemblyQualifiedName +"\n"+ typeof(GrappleGun).AssemblyQualifiedName);
 		StatCommand.Start();
 	}
 

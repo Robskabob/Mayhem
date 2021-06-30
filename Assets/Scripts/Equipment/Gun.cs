@@ -21,6 +21,7 @@ public class Gun : WeaponEquipment
 	[Command]
 	public override void Drop()
 	{
+		PickUpAble = true;
 		Abandand = true;
 		ExpireTime = 30;
 		netIdentity.RemoveClientAuthority();
@@ -31,6 +32,7 @@ public class Gun : WeaponEquipment
 	[ClientRpc]
 	public void RpcDrop()
 	{
+		PickUpAble = true;
 		transform.parent = null;
 		Holder = null;
 	}
@@ -195,6 +197,7 @@ public abstract class LaserBase : WeaponEquipment
 	[Command]
 	public override void Drop()
 	{
+		PickUpAble = true;
 		Abandand = true;
 		ExpireTime = 30;
 		netIdentity.RemoveClientAuthority();
@@ -205,6 +208,7 @@ public abstract class LaserBase : WeaponEquipment
 	[ClientRpc]
 	public void RpcDrop()
 	{
+		PickUpAble = true;
 		transform.parent = null;
 		Holder = null;
 	}

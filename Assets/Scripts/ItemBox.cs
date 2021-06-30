@@ -20,7 +20,7 @@ public class ItemBox : NetworkBehaviour
 		GetState();
 	}
 
-	[Command]
+	[Command(ignoreAuthority = true)]
 	public void GetState() 
 	{
 		uint id = 0;
@@ -57,6 +57,7 @@ public class ItemBox : NetworkBehaviour
 			NetworkServer.Destroy(Contents.gameObject);
 		}
 		Contents = NetworkIdentity.spawned[equipment].GetComponent<Equipment>();
+		Contents.PickUpAble = false; 
 		Contents.transform.SetParent(transform);
 		Contents.transform.localPosition = Vector3.up;
 		//Debug.Log("Contents is " + Contents != null);
@@ -113,6 +114,7 @@ public class ItemBox : NetworkBehaviour
 					Target += Vector2.up * 100;
 					time = 10;
 					Active = false;
+					Contents.PickUpAble = true;
 					Contents.transform.position = transform.position;
 					Contents.transform.SetParent(null);
 
@@ -176,4 +178,9 @@ public class ItemBox : NetworkBehaviour
 			}
 		}
 	}
+}
+
+public interface Interactable 
+{
+	void Interacte(Mob M);
 }

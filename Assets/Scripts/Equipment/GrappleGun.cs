@@ -24,6 +24,7 @@ public class GrappleGun : DirectedEquipment
 	[Command]
 	public override void Drop()
 	{
+		PickUpAble = true;
 		Abandand = true;
 		ExpireTime = 30;
 		transform.parent = null;
@@ -33,6 +34,7 @@ public class GrappleGun : DirectedEquipment
 	[ClientRpc]
 	public void RpcDrop()
 	{
+		PickUpAble = true;
 		transform.parent = null;
 		rb = null;
 	}
@@ -54,6 +56,7 @@ public class GrappleGun : DirectedEquipment
 	[ClientRpc]
 	public void RpcPickup(uint MobId)
 	{
+		Abandand = false;
 		if (!isServer)
 		{
 			Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;

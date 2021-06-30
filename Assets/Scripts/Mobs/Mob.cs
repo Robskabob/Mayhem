@@ -389,7 +389,8 @@ public class NetMob : Mob
 
 public abstract class Equipment : NetworkBehaviour
 {
-	public bool Abandand;
+	public bool Abandand;// { get { return _Abandand; } set { Debug.Log("EquipAbandand set: "+value); _Abandand = value; } }
+	//private bool _Abandand;
 	public float ExpireTime;
 	public abstract bool Pickup(Mob M);
 
@@ -412,7 +413,9 @@ public abstract class Equipment : NetworkBehaviour
 
 			if (hasAuthority)
 			{
-				Drop();
+				//Abandand = false;
+				//ExpireTime = 10;
+				//Drop();
 				Debug.LogError("Abandoned Held Item");
 			}
 
@@ -423,9 +426,11 @@ public abstract class Equipment : NetworkBehaviour
 		}
 	}
 
+	public bool PickUpAble = true;
+
 	private void OnTriggerStay2D(Collider2D col)
 	{
-		if (isServer)
+		if (isServer && PickUpAble)
 		{
 			Mob M = col.GetComponent<Mob>();
 			if (M != null && M.B.isInteracting())
