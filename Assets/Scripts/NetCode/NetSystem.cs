@@ -56,7 +56,7 @@ public class NetSystem : NetworkManager
 			NetworkServer.Spawn(IB.gameObject);
 			IB.Randomize();
 		}
-		for (int i = 0; i < 25; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			PlatBrain PlB = Instantiate(PlatGuy);
 			PlB.transform.position = new Vector3(300,300,0)*Random.insideUnitCircle;

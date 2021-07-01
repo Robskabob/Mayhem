@@ -25,8 +25,8 @@ public class GrappleGun : DirectedEquipment
 	public override void Drop()
 	{
 		PickUpAble = true;
-		Abandand = true;
 		ExpireTime = 30;
+		Abandand = true;
 		transform.parent = null;
 		rb = null;
 		RpcDrop();

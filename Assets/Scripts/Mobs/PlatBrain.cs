@@ -30,7 +30,8 @@ public class PlatBrain : Brain
 	private void OnDisable()
 	{
 		Die();
-		gameObject.SetActive(true);
+		if(!gameObject.activeSelf)
+			gameObject.SetActive(true);
 		enabled = true;
 		Body.rb.simulated = true;
 	}

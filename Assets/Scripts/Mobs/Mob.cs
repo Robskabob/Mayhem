@@ -411,16 +411,18 @@ public abstract class Equipment : NetworkBehaviour
 		{
 			ExpireTime -= Time.deltaTime;
 
-			if (hasAuthority)
-			{
-				//Abandand = false;
-				//ExpireTime = 10;
-				//Drop();
-				Debug.LogError("Abandoned Held Item");
-			}
-
 			if (isServer && ExpireTime < 0) 
 			{
+				if (hasAuthority)
+				{
+					//Abandand = false;
+					//ExpireTime = 10;
+					//Drop();
+					Debug.LogError("Abandoned Held Item " + GetType().FullName);
+					Abandand = false;
+					return;
+				}
+
 				NetworkServer.Destroy(gameObject);
 			}
 		}

@@ -22,8 +22,8 @@ public class Gun : WeaponEquipment
 	public override void Drop()
 	{
 		PickUpAble = true;
-		Abandand = true;
 		ExpireTime = 30;
+		Abandand = true;
 		netIdentity.RemoveClientAuthority();
 		transform.parent = null;
 		Holder = null;
@@ -198,8 +198,8 @@ public abstract class LaserBase : WeaponEquipment
 	public override void Drop()
 	{
 		PickUpAble = true;
-		Abandand = true;
 		ExpireTime = 30;
+		Abandand = true;
 		netIdentity.RemoveClientAuthority();
 		transform.parent = null;
 		Holder = null;

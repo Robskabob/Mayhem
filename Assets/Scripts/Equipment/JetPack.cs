@@ -17,8 +17,8 @@ public class JetPack : ActiveEquipment
 	public override void Drop()
 	{
 		PickUpAble = true;
-		Abandand = true;
 		ExpireTime = 30;
+		Abandand = true;
 		transform.parent = null;
 		M = null;
 		RpcDrop();

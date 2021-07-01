@@ -7,6 +7,9 @@ using Random = UnityEngine.Random;
 public class ItemBox : NetworkBehaviour 
 {
 	public Equipment Contents;
+	public Sprite wep;
+	public Sprite sec;
+	public Sprite act;
 	public SpriteRenderer SR;
 	public Vector2 Target;
 	public float time;
@@ -60,6 +63,21 @@ public class ItemBox : NetworkBehaviour
 		Contents.PickUpAble = false; 
 		Contents.transform.SetParent(transform);
 		Contents.transform.localPosition = Vector3.up;
+		switch (Contents) 
+		{
+			case WeaponEquipment _:
+				SR.sprite = wep;
+				break;
+			case DirectedEquipment _:
+				SR.sprite = sec;
+				break;
+			case ActiveEquipment _:
+				SR.sprite = act;
+				break;
+			case PasiveEquipment _:
+				Debug.LogError("there arnt any pasives");
+				break;
+		}
 		//Debug.Log("Contents is " + Contents != null);
 
 		transform.position = Pos + Vector2.up * 100;

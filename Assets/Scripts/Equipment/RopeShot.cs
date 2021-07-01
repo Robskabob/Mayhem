@@ -25,8 +25,8 @@ public class RopeShot : DirectedEquipment
 	public override void Drop()
 	{
 		PickUpAble = true;
-		Abandand = true;
 		ExpireTime = 30;
+		Abandand = true;
 		transform.parent = null;
 		rb = null;
 		RpcDrop();
@@ -113,7 +113,7 @@ public class RopeShot : DirectedEquipment
 			Distance = Vector2.Distance(transform.position, Pos);
 			if (Distance < BreakDist)
 			{
-				Debug.Log("Short");
+				//Debug.Log("Short");
 				inUse = false;
 				return;
 			}
