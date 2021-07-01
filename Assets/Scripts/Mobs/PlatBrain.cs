@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlatBrain : Brain
 {
+	public Region Inside;
+	public delegate void MobEvent(PlatBrain PB);
+	public event MobEvent OnDeath;
 	public bool dir;
 	public float wait;
 	public float time;
@@ -40,7 +43,8 @@ public class PlatBrain : Brain
 	{
 		if (isServer)
 		{
-
+			if(OnDeath != null)
+				OnDeath(this);
 			Vector2 rel;
 			if (NetSystem.I.PlayerBrains.Count > 0)
 				rel = NetSystem.I.PlayerBrains.ElementAt(Random.Range(0, NetSystem.I.PlayerBrains.Count)).Value.transform.position;

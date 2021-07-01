@@ -114,6 +114,36 @@ public class Region : MonoBehaviour
 		OnDeActivate();
 	}
 
+	public void MobEnter(PlatBrain PlB)
+	{
+		if (PlB.Inside != null)
+			Debug.Log("double in");
+		PlB.Inside = this;
+		PlB.OnDeath += MobDied;
+		Mobs.Add(PlB);
+		if (!Active)
+		{
+			PlB.enabled = false;
+			PlB.Body.rb.simulated = false;
+		}
+	}
+
+	public void MobExit(PlatBrain PlB)
+	{
+		if (PlB.Inside == this)
+			PlB.Inside = null;
+		else
+			Debug.Log("was in other");
+		PlB.OnDeath -= MobDied;
+		Mobs.Remove(PlB);
+	}
+
+	public void MobDied(PlatBrain PlB)
+	{
+		Mobs.Remove(PlB);
+		PlB.OnDeath -= MobDied;
+	}
+
 	private void OnTriggerEnter2D(Collider2D col)
 	{
 		//NetworkBehaviour NB = col.gameObject.GetComponent<NetworkBehaviour>();
@@ -142,13 +172,7 @@ public class Region : MonoBehaviour
 		PlatBrain PlB = col.gameObject.GetComponent<PlatBrain>();
 		if (PlB != null)
 		{
-			Mobs.Add(PlB);
-			if (!Active)
-			{
-				PlB.enabled = false;
-				PlB.Body.rb.simulated = false;
-			}
-			return;
+			MobEnter(PlB);
 		}
 	}
 	private void OnTriggerExit2D(Collider2D col)
@@ -177,8 +201,7 @@ public class Region : MonoBehaviour
 		PlatBrain PlB = col.gameObject.GetComponent<PlatBrain>();
 		if (PlB != null)
 		{
-			Mobs.Remove(PlB);
-			return;
+			MobExit(PlB);
 		}
 	}
 

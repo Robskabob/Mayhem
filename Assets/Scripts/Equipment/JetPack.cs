@@ -20,6 +20,7 @@ public class JetPack : ActiveEquipment
 		ExpireTime = 30;
 		Abandand = true;
 		transform.parent = null;
+		netIdentity.RemoveClientAuthority();
 		M = null;
 		RpcDrop();
 	}

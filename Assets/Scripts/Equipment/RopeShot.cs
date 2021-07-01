@@ -29,6 +29,7 @@ public class RopeShot : DirectedEquipment
 		Abandand = true;
 		transform.parent = null;
 		rb = null;
+		netIdentity.RemoveClientAuthority();
 		RpcDrop();
 	}
 	[ClientRpc]

@@ -75,8 +75,8 @@ public class NetSystem : NetworkManager
 	}
 	public void OnJoinedGame(NetworkConnection conn, JoinedMessage Join)
 	{
-		Debug.Log(NetworkIdentity.spawned.Count+"C");
-		Debug.Log(Join.id+"|"+Join.Player);
+		//Debug.Log(NetworkIdentity.spawned.Count+"C");
+		//Debug.Log(Join.id+"|"+Join.Player);
 		//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.Player, out) +"PBI");
 		NetworkIdentity NPI = NetworkIdentity.spawned[Join.id];
 		NetworkIdentity PBI = NetworkIdentity.spawned[Join.Player];

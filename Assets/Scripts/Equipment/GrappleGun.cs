@@ -29,6 +29,7 @@ public class GrappleGun : DirectedEquipment
 		Abandand = true;
 		transform.parent = null;
 		rb = null;
+		netIdentity.RemoveClientAuthority();
 		RpcDrop();
 	}
 	[ClientRpc]
