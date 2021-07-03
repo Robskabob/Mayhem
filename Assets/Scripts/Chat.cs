@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Reflection;
 using System.ComponentModel;
+using L33t.Network;
+using L33t.Equipment;
 
 public class Chat : MonoBehaviour 
 {

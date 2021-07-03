@@ -1,4 +1,6 @@
-﻿using Mirror;
+﻿using L33t.Equipment;
+using L33t.Network;
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 

@@ -96,7 +96,8 @@ public class MapGenerator : MonoBehaviour
 				}
 			}
 
-			Instantiate(Platform,Base.PlatformCandidates[i],Quaternion.identity,region.Contents.transform);
+			Transform T = Instantiate(Platform,Base.PlatformCandidates[i],Quaternion.identity,region.Contents.transform);
+			T.localScale = Random.insideUnitCircle * 5;
 		}
 	}
 

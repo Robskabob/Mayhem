@@ -1,161 +1,165 @@
 ﻿using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using L33t.Equipment;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-public class NetSystem : NetworkManager
+namespace L33t.Network
 {
-	public static NetSystem I;
-    public Dictionary<uint, NetPlayer> Players = new Dictionary<uint, NetPlayer>();
-    public Dictionary<uint, PlayerBrain> PlayerBrains = new Dictionary<uint, PlayerBrain>();
-
-    public PlayerBrain GamePlayer;
-
-	public List<Equipment> Equipment;
-	public ItemBox ItemBox;
-	public PlatBrain PlatGuy;
-
-	public override void Start()
+	public class NetSystem : NetworkManager
 	{
-		Registry.Reg.Equipment = Equipment;
-		ClientScene.RegisterPrefab(GamePlayer.gameObject, SpawnPlayerBrain, UnSpawn);
-		NetworkServer.RegisterHandler<JoinMessage>(OnJoinGame);
-		NetworkClient.RegisterHandler<JoinedMessage>(OnJoinedGame);
-		base.Start();
-		I = this;
-	}
+		public static NetSystem I;
+		public Dictionary<uint, NetPlayer> Players = new Dictionary<uint, NetPlayer>();
+		public Dictionary<uint, PlayerBrain> PlayerBrains = new Dictionary<uint, PlayerBrain>();
 
-	public override void OnClientConnect(NetworkConnection conn)
-	{
-		base.OnClientConnect(conn);
-		JoinMessage Join = new JoinMessage();
-		Join.Name = PlayerClient.PC.CP.N.text;
-		Join.Color = PlayerClient.PC.CP.C;
-		conn.Send(Join);
-	}
+		public PlayerBrain GamePlayer;
 
-	public override void OnServerReady(NetworkConnection conn)
-	{
-		base.OnServerReady(conn);
-	}
+		public List<Equipment.Equipment> Equipment;
+		public ItemBox ItemBox;
+		public PlatBrain PlatGuy;
 
-	public void OnJoinGame(NetworkConnection conn, JoinMessage Join)
-	{
-		NetPlayer NP = Instantiate(playerPrefab).GetComponent<NetPlayer>();
-		NetworkServer.AddPlayerForConnection(conn, NP.gameObject);
-
-		PlayerBrain PB = Instantiate(GamePlayer);
-		NetworkServer.Spawn(PB.gameObject, conn);
-
-		for (int i = 0; i < 25; i++)
+		public override void Start()
 		{
-			ItemBox IB = Instantiate(ItemBox);
-			NetworkServer.Spawn(IB.gameObject);
-			IB.Randomize();
-		}
-		for (int i = 0; i < 5; i++)
-		{
-			PlatBrain PlB = Instantiate(PlatGuy);
-			PlB.transform.position = new Vector3(300,300,0)*Random.insideUnitCircle;
-			NetworkServer.Spawn(PlB.gameObject);
-			PlB.Die();
+			Registry.Reg.Equipment = Equipment;
+			ClientScene.RegisterPrefab(GamePlayer.gameObject, SpawnPlayerBrain, UnSpawn);
+			NetworkServer.RegisterHandler<JoinMessage>(OnJoinGame);
+			NetworkClient.RegisterHandler<JoinedMessage>(OnJoinedGame);
+			base.Start();
+			I = this;
 		}
 
-		//Players.Add(NP.netId, NP);
-		//PlayerBrains.Add(NP.netId, PB);
-
-		JoinedMessage joined = new JoinedMessage();
-		Debug.Log(NP.netId+"|"+PB.netId);
-		joined.id = NP.netId;
-		joined.Player = PB.netId;
-		NetworkServer.SendToAll(joined);
-	}
-	public void OnJoinedGame(NetworkConnection conn, JoinedMessage Join)
-	{
-		//Debug.Log(NetworkIdentity.spawned.Count+"C");
-		//Debug.Log(Join.id+"|"+Join.Player);
-		//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.Player, out) +"PBI");
-		NetworkIdentity NPI = NetworkIdentity.spawned[Join.id];
-		NetworkIdentity PBI = NetworkIdentity.spawned[Join.Player];
-		//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.id, out NetworkIdentity NPI) + "NPI");
-		NetPlayer NP = NPI.GetComponent<NetPlayer>();
-
-		PlayerBrain PB = PBI.GetComponent<PlayerBrain>();
-
-		Players.Add(Join.id, NP);
-		PlayerBrains.Add(Join.id, PB);
-		Debug.Log("Completed");
-	}
-
-	GameObject SpawnPlayerBrain(SpawnMessage msg) 
-	{
-		PlayerBrain PB = Instantiate(GamePlayer);
-
-		if (PB.hasAuthority) 
+		public override void OnClientConnect(NetworkConnection conn)
 		{
-			Mob M = PB.gameObject.AddComponent<Mob>();
-			M.B = PB;
-		}
-		else 
-		{
-			NetMob NM = PB.gameObject.AddComponent<NetMob>();
-			NM.B = PB;
+			base.OnClientConnect(conn);
+			JoinMessage Join = new JoinMessage();
+			Join.Name = PlayerClient.PC.CP.N.text;
+			Join.Color = PlayerClient.PC.CP.C;
+			conn.Send(Join);
 		}
 
-		return PB.gameObject;
-	}
+		public override void OnServerReady(NetworkConnection conn)
+		{
+			base.OnServerReady(conn);
+		}
 
-	void UnSpawn(GameObject O) 
-	{
-		Destroy(O);
-	}
+		public void OnJoinGame(NetworkConnection conn, JoinMessage Join)
+		{
+			NetPlayer NP = Instantiate(playerPrefab).GetComponent<NetPlayer>();
+			NetworkServer.AddPlayerForConnection(conn, NP.gameObject);
 
-	public struct JoinMessage : NetworkMessage
-	{
-		public string Name;
-		public Color Color;
-		public int Team;
+			PlayerBrain PB = Instantiate(GamePlayer);
+			NetworkServer.Spawn(PB.gameObject, conn);
+
+			for (int i = 0; i < 25; i++)
+			{
+				ItemBox IB = Instantiate(ItemBox);
+				NetworkServer.Spawn(IB.gameObject);
+				IB.Randomize();
+			}
+			for (int i = 0; i < 5; i++)
+			{
+				PlatBrain PlB = Instantiate(PlatGuy);
+				PlB.transform.position = new Vector3(300, 300, 0) * Random.insideUnitCircle;
+				NetworkServer.Spawn(PlB.gameObject);
+				PlB.Die();
+			}
+
+			//Players.Add(NP.netId, NP);
+			//PlayerBrains.Add(NP.netId, PB);
+
+			JoinedMessage joined = new JoinedMessage();
+			Debug.Log(NP.netId + "|" + PB.netId);
+			joined.id = NP.netId;
+			joined.Player = PB.netId;
+			NetworkServer.SendToAll(joined);
+		}
+		public void OnJoinedGame(NetworkConnection conn, JoinedMessage Join)
+		{
+			//Debug.Log(NetworkIdentity.spawned.Count+"C");
+			//Debug.Log(Join.id+"|"+Join.Player);
+			//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.Player, out) +"PBI");
+			NetworkIdentity NPI = NetworkIdentity.spawned[Join.id];
+			NetworkIdentity PBI = NetworkIdentity.spawned[Join.Player];
+			//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.id, out NetworkIdentity NPI) + "NPI");
+			NetPlayer NP = NPI.GetComponent<NetPlayer>();
+
+			PlayerBrain PB = PBI.GetComponent<PlayerBrain>();
+
+			Players.Add(Join.id, NP);
+			PlayerBrains.Add(Join.id, PB);
+			Debug.Log("Completed");
+		}
+
+		GameObject SpawnPlayerBrain(SpawnMessage msg)
+		{
+			PlayerBrain PB = Instantiate(GamePlayer);
+
+			if (PB.hasAuthority)
+			{
+				Mob M = PB.gameObject.AddComponent<Mob>();
+				M.B = PB;
+			}
+			else
+			{
+				NetMob NM = PB.gameObject.AddComponent<NetMob>();
+				NM.B = PB;
+			}
+
+			return PB.gameObject;
+		}
+
+		void UnSpawn(GameObject O)
+		{
+			Destroy(O);
+		}
+
+		public struct JoinMessage : NetworkMessage
+		{
+			public string Name;
+			public Color Color;
+			public int Team;
+		}
+		public struct JoinedMessage : NetworkMessage
+		{
+			public uint id;
+			public uint Player;
+		}
 	}
-	public struct JoinedMessage : NetworkMessage
-	{
-		public uint id;
-		public uint Player;
-	}
-}
 
 #if UNITY_EDITOR
 
-[CustomEditor(typeof(NetSystem))]
-public class NetsystemInspector : NetworkManagerEditor 
-{
-	NetSystem NS;
-
-	private void OnEnable()
+	[CustomEditor(typeof(NetSystem))]
+	public class NetsystemInspector : NetworkManagerEditor
 	{
-		NS = target as NetSystem;
-	}
+		NetSystem NS;
 
-	public override void OnInspectorGUI()
-	{
-		base.OnInspectorGUI();
-		DrawDefaultInspector();
-		foreach (var kv in NS.PlayerBrains)
+		private void OnEnable()
 		{
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.IntField("net id", (int)kv.Key);
-			EditorGUILayout.ObjectField("net id", kv.Value, typeof(PlayerBrain), true);
-			EditorGUILayout.EndHorizontal();
+			NS = target as NetSystem;
 		}
-		foreach (var kv in NS.Players)
+
+		public override void OnInspectorGUI()
 		{
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.IntField("net id", (int)kv.Key);
-			EditorGUILayout.ObjectField("net id", kv.Value, typeof(PlayerBrain), true);
-			EditorGUILayout.EndHorizontal();
+			base.OnInspectorGUI();
+			DrawDefaultInspector();
+			foreach (var kv in NS.PlayerBrains)
+			{
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.IntField("net id", (int)kv.Key);
+				EditorGUILayout.ObjectField("net id", kv.Value, typeof(PlayerBrain), true);
+				EditorGUILayout.EndHorizontal();
+			}
+			foreach (var kv in NS.Players)
+			{
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.IntField("net id", (int)kv.Key);
+				EditorGUILayout.ObjectField("net id", kv.Value, typeof(PlayerBrain), true);
+				EditorGUILayout.EndHorizontal();
+			}
 		}
 	}
-}
 #endif
+}

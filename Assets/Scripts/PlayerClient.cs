@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using L33t.Network;
+using L33t.UI;
+using UnityEngine;
 
 public class PlayerClient : MonoBehaviour
 {

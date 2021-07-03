@@ -1,36 +1,40 @@
-﻿using Mirror;
+﻿using L33t.Network;
+using Mirror;
 using UnityEngine.UI;
 
-public class MultiMenu : Menu
+namespace L33t.UI
 {
-    public NetSystem NetSystem;
-
-    public InputField ServerIP;
-    public Text Displaytext;
-    bool isJoin = false;
-	private void Update()
+    public class MultiMenu : Menu
     {
-        if (NetworkClient.isConnected && isJoin)
+        public NetSystem NetSystem;
+
+        public InputField ServerIP;
+        public Text Displaytext;
+        bool isJoin = false;
+        private void Update()
         {
-            isJoin = false;
+            if (NetworkClient.isConnected && isJoin)
+            {
+                isJoin = false;
+                Close();
+            }
+            if (isJoin && !NetworkClient.active)
+            {
+                Displaytext.text = $"Connection to :{NetSystem.networkAddress} Failed :(";
+                isJoin = false;
+            }
+        }
+        public void HostGame()
+        {
+            NetSystem.StartHost();
             Close();
         }
-        if (isJoin && !NetworkClient.active)
+        public void JoinGame()
         {
-            Displaytext.text = $"Connection to :{NetSystem.networkAddress} Failed :(";
-            isJoin = false;
+            NetSystem.networkAddress = ServerIP.text;
+            NetSystem.StartClient();
+            Displaytext.text = $"Connecting to :" + NetSystem.networkAddress;
+            isJoin = true;
         }
-    }
-	public void HostGame()
-    {
-        NetSystem.StartHost();
-        Close();
-    }
-    public void JoinGame()
-    {
-        NetSystem.networkAddress = ServerIP.text;
-        NetSystem.StartClient();
-        Displaytext.text = $"Connecting to :" + NetSystem.networkAddress;
-        isJoin = true;
     }
 }

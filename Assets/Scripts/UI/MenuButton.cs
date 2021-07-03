@@ -1,8 +1,10 @@
 ﻿using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
-public class MenuButton : UIBehaviour 
+namespace L33t.UI
 {
-    public Button Button;
-    public Text Text;
+    public class MenuButton : UIBehaviour
+    {
+        public Button Button;
+        public Text Text;
+    }
 }

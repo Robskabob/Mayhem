@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using L33t.Network;
+using Mirror;
 using System.Linq;
 using UnityEngine;
 
@@ -43,8 +44,7 @@ public class PlatBrain : Brain
 	{
 		if (isServer)
 		{
-			if(OnDeath != null)
-				OnDeath(this);
+			OnDeath?.Invoke(this);
 			Vector2 rel;
 			if (NetSystem.I.PlayerBrains.Count > 0)
 				rel = NetSystem.I.PlayerBrains.ElementAt(Random.Range(0, NetSystem.I.PlayerBrains.Count)).Value.transform.position;

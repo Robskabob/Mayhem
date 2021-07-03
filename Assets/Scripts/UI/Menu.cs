@@ -1,20 +1,23 @@
 ﻿using UnityEngine.EventSystems;
 
-public class Menu : UIBehaviour 
+namespace L33t.UI
 {
-    public Menu Last;
-    public void NextMenu(Menu next) 
+    public class Menu : UIBehaviour
     {
-        next.Last = this;
-        next.Open();
-        Close();
-    }
-    public void Open() 
-    {
-        gameObject.SetActive(true);
-    }
-    public void Close()
-    {
-        gameObject.SetActive(false);
+        public Menu Last;
+        public void NextMenu(Menu next)
+        {
+            next.Last = this;
+            next.Open();
+            Close();
+        }
+        public void Open()
+        {
+            gameObject.SetActive(true);
+        }
+        public void Close()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
