@@ -70,21 +70,21 @@ namespace L33t.Network
 			//Players.Add(NP.netId, NP);
 			//PlayerBrains.Add(NP.netId, PB);
 
-			JoinedMessage joined = new JoinedMessage();
-			Debug.Log(NP.netId + "|" + PB.netId);
-			joined.id = NP.netId;
-			joined.Player = PB.netId;
-			NetworkServer.SendToAll(joined);
-		}
-		public void OnJoinedGame(NetworkConnection conn, JoinedMessage Join)
-		{
-			//Debug.Log(NetworkIdentity.spawned.Count+"C");
-			//Debug.Log(Join.id+"|"+Join.Player);
-			//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.Player, out) +"PBI");
-			NetworkIdentity NPI = NetworkIdentity.spawned[Join.id];
-			NetworkIdentity PBI = NetworkIdentity.spawned[Join.Player];
-			//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.id, out NetworkIdentity NPI) + "NPI");
-			NetPlayer NP = NPI.GetComponent<NetPlayer>();
+		JoinedMessage joined = new JoinedMessage();
+		//Debug.Log(NP.netId+"|"+PB.netId);
+		joined.id = NP.netId;
+		joined.Player = PB.netId;
+		NetworkServer.SendToAll(joined);
+	}
+	public void OnJoinedGame(NetworkConnection conn, JoinedMessage Join)
+	{
+		//Debug.Log(NetworkIdentity.spawned.Count+"C");
+		//Debug.Log(Join.id+"|"+Join.Player);
+		//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.Player, out) +"PBI");
+		NetworkIdentity NPI = NetworkIdentity.spawned[Join.id];
+		NetworkIdentity PBI = NetworkIdentity.spawned[Join.Player];
+		//Debug.Log(NetworkIdentity.spawned.TryGetValue(Join.id, out NetworkIdentity NPI) + "NPI");
+		NetPlayer NP = NPI.GetComponent<NetPlayer>();
 
 			PlayerBrain PB = PBI.GetComponent<PlayerBrain>();
 

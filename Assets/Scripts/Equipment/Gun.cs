@@ -233,20 +233,23 @@ namespace L33t.Equipment
 			return true;
 		}
 
-		[ClientRpc]
-		public void RpcPickup(uint MobId)
+	[ClientRpc]
+	public void RpcPickup(uint MobId)
+	{
+		Abandand = false;
+		if (!isServer)
 		{
-			Abandand = false;
-			if (!isServer)
-			{
-				Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
-				transform.parent = M.transform;
-				transform.localPosition = Vector3.zero;
-				Holder = M;
-				if (!M.PickUp(this))
-					Debug.LogError("Cant pick up but valid on Server?");
-			}
+			Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
+			Color C = M.GetComponent<SpriteRenderer>().color;
+			LaserVis.endColor = C;
+			LaserVis.startColor = C;
+			transform.parent = M.transform;
+			transform.localPosition = Vector3.zero;
+			Holder = M;
+			if (!M.PickUp(this))
+				Debug.LogError("Cant pick up but valid on Server?");
 		}
+	}
 
 		public override void Use(Vector2 Pos)
 		{
