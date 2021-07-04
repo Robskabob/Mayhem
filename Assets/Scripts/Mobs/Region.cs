@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using L33t.Network;
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -118,6 +119,14 @@ public class Region : MonoBehaviour
 	{
 		if (PlB.Inside != null)
 			Debug.Log("double in");
+		foreach (PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
+		{
+			if (Vector2.Distance(PB.transform.position, transform.position) < 100)
+			{
+				PlB.Die();
+				return;
+			}
+		}
 		PlB.Inside = this;
 		PlB.OnDeath += MobDied;
 		Mobs.Add(PlB);
@@ -142,6 +151,11 @@ public class Region : MonoBehaviour
 	{
 		Mobs.Remove(PlB);
 		PlB.OnDeath -= MobDied;
+
+		if (!gameObject.activeSelf)
+			gameObject.SetActive(true);
+		enabled = true;
+		PlB.Body.rb.simulated = true;
 	}
 
 	private void OnTriggerEnter2D(Collider2D col)
