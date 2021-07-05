@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class Animator : MonoBehaviour
+public class IKAnimator : MonoBehaviour
 {
     public List<BodyPart> Parts;
     public List<Attachment> Attachments;
@@ -30,16 +30,25 @@ public class Animator : MonoBehaviour
         
     }
     public float R=2;
+    public float rotR=2;
     void Update()
     {
         for (int i = 0; i < Attachments.Count; i++)
         {
             Attachment A = Attachments[i];
-            Vector3 diff = ((A.Part1.Part.TransformPoint(A.offset1) - A.Part2.Part.TransformPoint(A.offset2)) / R);
+            Vector2 p1 = A.Part1.Part.TransformPoint(A.offset1);
+            Vector2 p2 = A.Part2.Part.TransformPoint(A.offset2);
+            Vector3 diff = ((p1-p2) / R);
+            Vector2 dir = (p1 - p2).normalized;
+            float dist = Vector2.Distance(p1, p2);
+            //Vector2 Center = p1 - (dir * dist / 2);
+            float theta1 = Vector2.SignedAngle(A.Part1.Part.TransformDirection(A.offset1),dir) / rotR;
+            float theta2 = Vector2.SignedAngle(A.Part2.Part.TransformDirection(A.offset2),dir) / rotR;
             diff.z = 0;
             A.Part1.Part.position -= diff * A.Weight;
             A.Part2.Part.position += diff * (1 - A.Weight);
-            A.Part1.Part.Rotate(Vector3.forward,5);
+            A.Part1.Part.Rotate(Vector3.forward, theta1 * A.Weight);
+            A.Part2.Part.Rotate(Vector3.forward, -theta2 * (1 - A.Weight));
         }
     }
 	private void OnDrawGizmos()
@@ -52,16 +61,16 @@ public class Animator : MonoBehaviour
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(Animator))]
+[CustomEditor(typeof(IKAnimator))]
 public class AnimatorEditor : Editor 
 {
-    Animator A;
+    IKAnimator A;
     static bool Parts;
     static bool Attachments;
 
 	private void OnEnable()
 	{
-        A = target as Animator;
+        A = target as IKAnimator;
 	}
 
     public string[] GetStrings()
@@ -128,11 +137,34 @@ public class Attachment
     public float Weight;
     public void DrawGizmo() 
     {
-        if(Part1 != null)
-            Gizmos.DrawWireSphere(Part1.Part.TransformPoint(offset1),.1f);
+        if(Part1 != null) 
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(Part1.Part.TransformPoint(offset1),.01f);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(Part1.Part.position, Part1.Part.TransformDirection(offset1));
+        }
         if(Part2 != null)
-            Gizmos.DrawWireSphere(Part2.Part.TransformPoint(offset2),.1f);
-        if(Part1 != null && Part2 != null)
-            Gizmos.DrawLine(Part1.Part.TransformPoint(offset1), Part2.Part.TransformPoint(offset2));   
+		{
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(Part2.Part.TransformPoint(offset2),.01f);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(Part2.Part.position, Part2.Part.TransformDirection(offset2));
+		}
+        if(Part1 != null && Part2 != null) 
+        {
+            Vector2 p1 = Part1.Part.TransformPoint(offset1);
+            Vector2 p2 = Part2.Part.TransformPoint(offset2);
+            Vector2 dir = (p1 - p2).normalized;
+            float dist = Vector2.Distance(p1,p2);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(p1,p2);
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(p1 - (dir * dist / 2),dir);
+            Handles.color = Color.black;
+            //Handles.SphereHandleCap(0,Vector3.zero,Quaternion.identity,5,EventType.Repaint);
+            Handles.DrawWireArc(p1,Vector3.forward, Part1.Part.TransformDirection(offset1), Vector2.SignedAngle(Part1.Part.TransformDirection(offset1),dir),.05f);
+            Handles.DrawWireArc(p2,Vector3.forward, Part2.Part.TransformDirection(offset2), Vector2.SignedAngle(Part2.Part.TransformDirection(offset2),dir),.05f);
+        }
     }
 }
