@@ -31,6 +31,8 @@ public class IKAnimator : MonoBehaviour
     }
     public float R=2;
     public float rotR=2;
+    public float MaxR;
+    public float MaxRd;
     void Update()
     {
         for (int i = 0; i < Attachments.Count; i++)
@@ -40,15 +42,25 @@ public class IKAnimator : MonoBehaviour
             Vector2 p2 = A.Part2.Part.TransformPoint(A.offset2);
             Vector3 diff = ((p1-p2) / R);
             Vector2 dir = (p1 - p2).normalized;
-            float dist = Vector2.Distance(p1, p2);
+            //float dist = Vector2.Distance(p1, p2);
             //Vector2 Center = p1 - (dir * dist / 2);
             float theta1 = Vector2.SignedAngle(A.Part1.Part.TransformDirection(A.offset1),dir) / rotR;
             float theta2 = Vector2.SignedAngle(A.Part2.Part.TransformDirection(A.offset2),dir) / rotR;
+
+            if (Mathf.Abs(theta1) > MaxRd)
+                theta1 = 0;
+            if (Mathf.Abs(theta2) > MaxRd)
+                theta2 = 0;
+            if (Mathf.Abs(theta1) > MaxR)
+                theta1 = MaxR * Mathf.Sign(theta1);
+            if (Mathf.Abs(theta2) > MaxR)
+                theta2 = MaxR * Mathf.Sign(theta2);
+
             diff.z = 0;
             A.Part1.Part.position -= diff * A.Weight;
             A.Part2.Part.position += diff * (1 - A.Weight);
-            A.Part1.Part.Rotate(Vector3.forward, theta1 * A.Weight);
-            A.Part2.Part.Rotate(Vector3.forward, -theta2 * (1 - A.Weight));
+            A.Part1.Part.Rotate(Vector3.forward, -theta1 * A.Weight);
+            A.Part2.Part.Rotate(Vector3.forward, theta2 * (1 - A.Weight));
         }
     }
 	private void OnDrawGizmos()
