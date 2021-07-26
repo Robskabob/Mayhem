@@ -36,6 +36,15 @@ public class Mob : MonoBehaviour
 
 	public int Count;
 
+	public Region Inside;
+	public Vector2Int ChunkPos;
+	public delegate void MobEvent(Mob M);
+	public event MobEvent OnDeath;
+	public void Kill() 
+	{
+		OnDeath?.Invoke(this);
+	}
+
 	public float JumpTime;
 	public float JumpWait;
 	public bool Picked;
@@ -91,6 +100,14 @@ public class Mob : MonoBehaviour
 
 	protected virtual void FixedUpdate()
 	{
+		int ychunk = (int)((transform.position.y - 50) / 100);
+		Vector2Int newChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100),ychunk);
+		if (ChunkPos != newChunkPos) 
+		{
+			ChunkPos = newChunkPos;
+			Debug.DrawLine(transform.position + new Vector3(-1, 1, 0), transform.position + new Vector3(1, -1, 0),Color.white,15);
+			Debug.DrawLine(transform.position + new Vector3(-1, -1, 0), transform.position + new Vector3(1, 1, 0), Color.white, 15);
+		}
 		Count = Collisions.Count;
 		Vector2 Dir = B.GetDir();
 		if (Collisions.Count == 0)

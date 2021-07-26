@@ -17,7 +17,7 @@ namespace L33t.Network
 
 		public PlayerBrain GamePlayer;
 
-		public List<Equipment.Equipment> Equipment;
+		public List<Equipment.Equipment> Equipment;//shouldent be here
 		public ItemBox ItemBox;
 		public PlatBrain PlatGuy;
 
@@ -45,6 +45,7 @@ namespace L33t.Network
 			base.OnServerReady(conn);
 		}
 
+		//abuse
 		public void OnJoinGame(NetworkConnection conn, JoinMessage Join)
 		{
 			NetPlayer NP = Instantiate(playerPrefab).GetComponent<NetPlayer>();

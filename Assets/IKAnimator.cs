@@ -5,10 +5,43 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
+/*Sudo code
+ *
+ *raycast to ground
+ *if on ground move opisite of whole body movment
+ *{
+ *if leg is farback retract it
+ *}
+ *
+ */
+
+public class StateMachine 
+{
+    public enum States 
+    {
+        onGround,
+        inAir,
+        inBack,
+        returning,
+    }
+
+    public Transform Part;
+    public float DistToGround;
+    public float MaxRay;
+
+    public void Update() 
+    {
+        RaycastHit2D hit = Physics2D.Raycast(Part.position,Vector2.down,MaxRay);
+        DistToGround = hit.distance;
+        Part.up = hit.normal;
+    }
+}
+
 public class IKAnimator : MonoBehaviour
 {
     public List<BodyPart> Parts;
     public List<Attachment> Attachments;
+    public List<Path> Paths;
     //public BodyPart Head;
     //public BodyPart Body;
     //public BodyPart RArm;
@@ -35,6 +68,10 @@ public class IKAnimator : MonoBehaviour
     public float MaxRd;
     void Update()
     {
+        for (int i = 0; i < Paths.Count; i++)
+        {
+            Paths[i].Update(Time.deltaTime);
+        }
         for (int i = 0; i < Attachments.Count; i++)
         {
             Attachment A = Attachments[i];
@@ -79,6 +116,7 @@ public class AnimatorEditor : Editor
     IKAnimator A;
     static bool Parts;
     static bool Attachments;
+    static bool Paths;
 
 	private void OnEnable()
 	{
@@ -97,6 +135,10 @@ public class AnimatorEditor : Editor
 
 	public override void OnInspectorGUI()
 	{
+        if(GUILayout.Button("Set Dirty")) 
+        {
+            EditorUtility.SetDirty(A);
+        }
         Parts = EditorGUILayout.BeginFoldoutHeaderGroup(Parts,"Parts");
         if(Parts)
 		{
@@ -111,22 +153,47 @@ public class AnimatorEditor : Editor
         EditorGUILayout.EndFoldoutHeaderGroup();
 
         Attachments = EditorGUILayout.BeginFoldoutHeaderGroup(Attachments, "Attachments");
-        if(Attachments)
-		{
-            for(int i = 0; i < A.Attachments.Count; i++) 
+        if (Attachments)
+        {
+            for (int i = 0; i < A.Attachments.Count; i++)
             {
                 EditorGUILayout.LabelField($"Attachment {i}");
                 EditorGUI.indentLevel++;
                 A.Attachments[i].Part1 = A.Parts[EditorGUILayout.Popup(A.Parts.FindIndex((x) => x.Part == A.Attachments[i].Part1.Part), GetStrings())];
                 A.Attachments[i].Part2 = A.Parts[EditorGUILayout.Popup(A.Parts.FindIndex((x) => x.Part == A.Attachments[i].Part2.Part), GetStrings())];
                 //A.Attachments[i].Part1 = EditorGUILayout.Vector2Field("Offset 1",A.Attachments[i].offset1);
-                A.Attachments[i].offset1 = EditorGUILayout.Vector2Field("Offset 1",A.Attachments[i].offset1);
-                A.Attachments[i].offset2 = EditorGUILayout.Vector2Field("Offset 2",A.Attachments[i].offset2);
-                A.Attachments[i].Weight = EditorGUILayout.FloatField("Weight",A.Attachments[i].Weight);
+                A.Attachments[i].offset1 = EditorGUILayout.Vector2Field("Offset 1", A.Attachments[i].offset1);
+                A.Attachments[i].offset2 = EditorGUILayout.Vector2Field("Offset 2", A.Attachments[i].offset2);
+                A.Attachments[i].Weight = EditorGUILayout.FloatField("Weight", A.Attachments[i].Weight);
                 EditorGUI.indentLevel--;
             }
-		}
+        }
         EditorGUILayout.EndFoldoutHeaderGroup();
+
+        Paths = EditorGUILayout.BeginFoldoutHeaderGroup(Paths, "Paths");
+        if (Paths)
+        {
+            for (int i = 0; i < A.Paths.Count; i++)
+            {
+                EditorGUILayout.LabelField($"Path {i}");
+                EditorGUI.indentLevel++;
+                A.Paths[i].Part = A.Parts[EditorGUILayout.Popup(A.Parts.FindIndex((x) => x.Part == A.Paths[i].Part.Part), GetStrings())];
+                A.Paths[i].frame = EditorGUILayout.IntField("Frame ", A.Paths[i].frame);
+                A.Paths[i].time = EditorGUILayout.FloatField("Time", A.Paths[i].time);
+                for(int j = 0; j < A.Paths[i].KeyFrames.Count; j++)
+                {
+                    EditorGUI.indentLevel++;
+                    Path.KeyFrame KF = A.Paths[i].KeyFrames[j];
+                    KF.Position = EditorGUILayout.Vector2Field("Position", A.Paths[i].KeyFrames[j].Position);
+                    KF.Duration = EditorGUILayout.FloatField("Duration", A.Paths[i].KeyFrames[j].Duration);
+                    A.Paths[i].KeyFrames[j] = KF;
+                    EditorGUI.indentLevel--;
+                }
+                EditorGUI.indentLevel--;
+            }
+        }
+        EditorGUILayout.EndFoldoutHeaderGroup();
+
         EditorGUILayout.Separator();
         DrawDefaultInspector();
 	}
@@ -178,5 +245,37 @@ public class Attachment
             Handles.DrawWireArc(p1,Vector3.forward, Part1.Part.TransformDirection(offset1), Vector2.SignedAngle(Part1.Part.TransformDirection(offset1),dir),.05f);
             Handles.DrawWireArc(p2,Vector3.forward, Part2.Part.TransformDirection(offset2), Vector2.SignedAngle(Part2.Part.TransformDirection(offset2),dir),.05f);
         }
+    }
+}
+
+[System.Serializable]
+public class Path 
+{
+    public BodyPart Part;
+    public List<KeyFrame> KeyFrames;
+    public int frame;
+    public float time;
+    public void Update(float deltaTime) 
+    {
+        time += deltaTime;
+        if(time > KeyFrames[frame].Duration) 
+        {
+            time -= KeyFrames[frame].Duration;
+            frame++;
+            if (frame >= KeyFrames.Count) 
+            {
+                frame = 0;
+            }
+        }
+        if(frame != 0)
+        Part.Part.localPosition = Vector3.Lerp(KeyFrames[frame - 1].Position, KeyFrames[frame].Position,time / KeyFrames[frame].Duration);
+        else
+        Part.Part.localPosition = Vector3.Lerp(KeyFrames[KeyFrames.Count-1].Position, KeyFrames[frame].Position,time / KeyFrames[frame].Duration);
+    }
+    [System.Serializable]
+    public struct KeyFrame 
+    {
+        public Vector2 Position;
+        public float Duration;
     }
 }

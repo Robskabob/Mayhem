@@ -96,8 +96,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a7a4bb992ac067408112ae7b456ce39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapGen: {fileID: 0}
-  OriginDefualt: {fileID: 3631743745835892603}
+  RegionManager: {fileID: 6416192992204495072, guid: abb83c6088e310f4887d548ced1d766c,
+    type: 3}
   SR: {fileID: 3631743745835892604}
   Neighbors:
   - {fileID: 0}
