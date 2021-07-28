@@ -233,23 +233,23 @@ namespace L33t.Equipment
 			return true;
 		}
 
-	[ClientRpc]
-	public void RpcPickup(uint MobId)
-	{
-		Abandand = false;
-		if (!isServer)
+		[ClientRpc]
+		public void RpcPickup(uint MobId)
 		{
-			Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
-			Color C = M.GetComponent<SpriteRenderer>().color;
-			LaserVis.endColor = C;
-			LaserVis.startColor = C;
-			transform.parent = M.transform;
-			transform.localPosition = Vector3.zero;
-			Holder = M;
-			if (!M.PickUp(this))
-				Debug.LogError("Cant pick up but valid on Server?");
+			Abandand = false;
+			if (!isServer)
+			{
+				Mob M = NetworkIdentity.spawned[MobId].GetComponent<Brain>().Body;
+				Color C = M.GetComponent<SpriteRenderer>().color;
+				LaserVis.endColor = C;
+				LaserVis.startColor = C;
+				transform.parent = M.transform;
+				transform.localPosition = Vector3.zero;
+				Holder = M;
+				if (!M.PickUp(this))
+					Debug.LogError("Cant pick up but valid on Server?");
+			}
 		}
-	}
 
 		public override void Use(Vector2 Pos)
 		{
@@ -270,10 +270,31 @@ namespace L33t.Equipment
 		}
 
 
+
+		[Command(ignoreAuthority = true)]
+		public void SetVis(bool val)
+		{
+			SetVisRPC(val);
+		}
+		[Command(ignoreAuthority = true)]
+		public void SetVisPos(Vector3 pos, Vector2 hitpos)
+		{
+			SetVisPosRPC(pos, hitpos);
+		}
+		[ClientRpc]
+		public void SetVisRPC(bool val)
+		{
+			LaserVis.enabled = val;
+		}
+		[ClientRpc]
+		public void SetVisPosRPC(Vector3 pos, Vector2 hitpos)
+		{
+			LaserVis.SetPositions(new Vector3[] {pos, hitpos});
+		}
 		protected virtual void Fire(Vector2 Pos)
 		{
 			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos - (Vector2)transform.parent.position, MaxDistance);
-			LaserVis.enabled = true;
+			SetVis(true);
 			Shoot = true;
 			if (r.point == Vector2.zero)
 			{
@@ -294,7 +315,7 @@ namespace L33t.Equipment
 					}
 				}
 			}
-			LaserVis.SetPositions(new Vector3[] { transform.position, (Vector3)HitPos });
+			SetVisPos(transform.position, HitPos);
 		}
 
 		protected override void Update()
@@ -304,7 +325,7 @@ namespace L33t.Equipment
 			else if (!Shoot)
 				waitTime += Time.deltaTime;
 			//
-			LaserVis.enabled = Shoot;
+			SetVis(Shoot);
 			Shoot = false;
 			//LaserVis
 		}

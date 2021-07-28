@@ -98,6 +98,8 @@ public class MapGenerator : MonoBehaviour
 
 			Transform T = Instantiate(Platform,Base.PlatformCandidates[i],Quaternion.identity,region.Contents.transform);
 			T.localScale = Random.insideUnitCircle * 5;
+			if(T.localScale.magnitude < .5f)
+				T.localScale *= 1 / T.localScale.magnitude;
 		}
 	}
 

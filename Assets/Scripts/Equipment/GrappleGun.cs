@@ -231,9 +231,9 @@ namespace L33t.Equipment
 		public override void Randomize()
 		{
 			MaxHealth = Random.Range(5, 100f);
-			MaxDistance = Random.Range(1, 50f);
+			MaxDistance = Random.Range(10, 50f);
 
-			Force = Random.Range(1000, 10000f) * Random.Range(.1f, 1);
+			Force = Random.Range(500, 5000f) * Random.Range(1, 10f);
 			BounceRange = Random.Range(.1f, MaxDistance / 10);
 			NormalRange = Random.Range(BounceRange, MaxDistance / 5);
 			MaxBounceMult = Random.Range(1, 10f);

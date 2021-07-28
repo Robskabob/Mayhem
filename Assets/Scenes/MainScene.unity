@@ -14152,7 +14152,8 @@ MonoBehaviour:
   - {fileID: 5162736755634167122, guid: ca6c2d364aa0b9440b0c1bfbd063c911, type: 3}
   - {fileID: 8193879952070151340, guid: 6cc2111fab3408445874ebec789b02b2, type: 3}
   - {fileID: 6657689610651776928, guid: 3e73f52f4432615478722f73e59ddd70, type: 3}
-  GamePlayer: {fileID: 0}
+  GamePlayer: {fileID: 8793293131934340161, guid: 099c4968915120547a4e4a77e3e561ed,
+    type: 3}
   Equipment:
   - {fileID: 3729528284475057292, guid: 8db6813cb7782af44bdeb89761f52d23, type: 3}
   - {fileID: 8870729647989547971, guid: 1fc30d8b464cd4843bfa5f86385675ba, type: 3}
@@ -19508,7 +19509,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1774.0012}
+  m_AnchoredPosition: {x: 0, y: 1870.57}
   m_SizeDelta: {x: 0, y: 2000}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &758559670
@@ -49692,8 +49693,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1789176122}
   m_HandleRect: {fileID: 1789176121}
   m_Direction: 2
-  m_Value: -0.0000006881077
-  m_Size: 0.113
+  m_Value: -0.054436233
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

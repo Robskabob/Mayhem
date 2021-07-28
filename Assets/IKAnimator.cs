@@ -64,6 +64,10 @@ public class IKAnimator : MonoBehaviour
     }
     public float R=2;
     public float rotR=2;
+    public int id;
+    public float rem;
+    public float t1;
+    public float t2;
     public float MaxR;
     public float MaxRd;
     void Update()
@@ -81,6 +85,14 @@ public class IKAnimator : MonoBehaviour
             Vector2 dir = (p1 - p2).normalized;
             //float dist = Vector2.Distance(p1, p2);
             //Vector2 Center = p1 - (dir * dist / 2);
+            //theirs
+            //float theta1 = (Vector2.SignedAngle(A.Part1.Part.TransformDirection(A.offset1),dir) % rem) / rotR;
+            //float theta2 = (Vector2.SignedAngle(A.Part2.Part.TransformDirection(A.offset2),dir) % rem) / rotR;
+			//if (i == id)
+			//{
+            //    t1 = theta1 * rotR;
+            //    t2 = theta2 * rotR;
+			//}
             float theta1 = Vector2.SignedAngle(A.Part1.Part.TransformDirection(A.offset1),dir) / rotR;
             float theta2 = Vector2.SignedAngle(A.Part2.Part.TransformDirection(A.offset2),dir) / rotR;
 
@@ -100,13 +112,15 @@ public class IKAnimator : MonoBehaviour
             A.Part2.Part.Rotate(Vector3.forward, theta2 * (1 - A.Weight));
         }
     }
-	private void OnDrawGizmos()
+    #if UNITY_EDITOR
+    private void OnDrawGizmos()
 	{
         for(int i = 0; i < Attachments.Count; i++) 
         {
             Attachments[i].DrawGizmo();
         }
 	}
+    #endif
 }
 
 #if UNITY_EDITOR
@@ -214,6 +228,8 @@ public class Attachment
     public Vector2 offset1;
     public Vector2 offset2;
     public float Weight;
+
+    #if UNITY_EDITOR
     public void DrawGizmo() 
     {
         if(Part1 != null) 
@@ -246,6 +262,7 @@ public class Attachment
             Handles.DrawWireArc(p2,Vector3.forward, Part2.Part.TransformDirection(offset2), Vector2.SignedAngle(Part2.Part.TransformDirection(offset2),dir),.05f);
         }
     }
+    #endif
 }
 
 [System.Serializable]

@@ -26,7 +26,7 @@ public class Hud : MonoBehaviour
 
 		int ychunk = (int)((Body.transform.position.y - 50) / 100);
 		int xchunk = (int)((Body.transform.position.x + (50 * (1 - ychunk % 2)))/100);
-		Altimeter.text = $"X:{(int)Body.transform.position.x}, Y:{(int)Body.transform.position.y} | Chunk X:{xchunk}, Y:{ychunk}";
+		Altimeter.text = $"X:{(int)Body.transform.position.x}, Y:{(int)Body.transform.position.y} | X:{xchunk}, Y:{ychunk}";
 		Slot.text = "";
 		Stats.text = "";
 		if (Body.WeaponEquipment.Count > 0)

@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Default: {fileID: 3631743745835892603, guid: 2696c91e328b70045b865ef3bf159906, type: 3}
-  MapGen: {fileID: 0}
+  MapGen: {fileID: 9051348417960578017, guid: d4e081a3f735b02438249b1981006651, type: 3}
