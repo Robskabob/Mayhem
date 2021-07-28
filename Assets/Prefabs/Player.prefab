@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2631108224710302165}
+  - component: {fileID: 8793293131934340161}
   - component: {fileID: 2631108224710302164}
-  - component: {fileID: 2631108224710302163}
   - component: {fileID: 2631108224710302162}
   - component: {fileID: 2631108224710302161}
   - component: {fileID: 2631108224710302160}
@@ -37,45 +37,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2631108224710302164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2631108224710302159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52d2270465dd175408e514694fb863cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NamePlate: {fileID: 8113226849931944284}
-  rb: {fileID: 2631108224710302162}
-  B: {fileID: 2631108224710302163}
-  Health: 40
-  MaxHealth: 40
-  Shield: 10
-  MaxShield: 10
-  ShieldRate: 2
-  ShieldTime: 5
-  ShieldWait: 0
-  MinSpeed: 3
-  Speed: 1500
-  AirSpeed: 500
-  Jump: 1000
-  Team: 0
-  MaxItems: 3
-  Equipment: []
-  WeaponEquipment: []
-  DirectedEquipment: []
-  ActiveEquipment: []
-  PassiveEquipment: []
-  wasDropping: 0
-  Count: 0
-  JumpTime: 0.5
-  JumpWait: 0
-  Picked: 0
---- !u!114 &2631108224710302163
+--- !u!114 &8793293131934340161
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,7 +67,48 @@ MonoBehaviour:
   Shift: 0
   ALT: 0
   CTRL: 0
+  Hiding: 0
   LocalPlayerID: 0
+--- !u!114 &2631108224710302164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2631108224710302159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52d2270465dd175408e514694fb863cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NamePlate: {fileID: 8113226849931944284}
+  rb: {fileID: 2631108224710302162}
+  B: {fileID: 8793293131934340161}
+  Health: 40
+  MaxHealth: 40
+  Shield: 10
+  MaxShield: 10
+  ShieldRate: 2
+  ShieldTime: 5
+  ShieldWait: 0
+  MinSpeed: 3
+  Speed: 1500
+  AirSpeed: 500
+  Jump: 1000
+  Team: 0
+  MaxItems: 3
+  Equipment: []
+  WeaponEquipment: []
+  DirectedEquipment: []
+  ActiveEquipment: []
+  PassiveEquipment: []
+  wasDropping: 0
+  Count: 0
+  Inside: {fileID: 0}
+  ChunkPos: {x: 0, y: 0}
+  JumpTime: 0.5
+  JumpWait: 0
+  Picked: 0
 --- !u!50 &2631108224710302162
 Rigidbody2D:
   serializedVersion: 4

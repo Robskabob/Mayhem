@@ -26,6 +26,8 @@ public class PlayerBrain : Brain
 	public bool ALT;
 	public bool CTRL;
 
+	public bool Hiding;
+
 	//public NetPlayer LocalPlayer;
 	public uint LocalPlayerID;
 
@@ -40,8 +42,49 @@ public class PlayerBrain : Brain
 		}
 	}
 
+	public void BodySwap(Mob body) 
+	{
+		if (!Hiding)
+		{
+			Hiding = true;
+			Body.rb.constraints = RigidbodyConstraints2D.FreezeAll;
+			GetComponent<SpriteRenderer>().enabled = false;
+			GetComponent<Collider2D>().isTrigger = true;
+			GetComponent<Mob>().enabled = false;
+
+		}
+		//Cam.Target = body.rb;
+		transform.SetParent(body.transform);
+		transform.localPosition = Vector3.zero;
+		Brain b = body.B;
+		b.enabled = false;
+		body.B = this;
+		Body.B = b;
+		b.Body = body;
+		Body = body;
+	}
+
 	public void Update()
 	{
+		//if (Hiding) 
+		//{
+		//	transform.localPosition = Vector3.zero;
+		//}
+		//if (Input.GetKeyDown(KeyCode.G)) 
+		//{
+		//	Collider2D[] cols = Physics2D.OverlapCircleAll(Cam.Camera.ScreenToWorldPoint(Input.mousePosition),5);
+		//	for(int i = 0; i < cols.Length; i++) 
+		//	{
+		//		Mob M = cols[i].GetComponent<Mob>();
+		//		if (M == null)
+		//			continue;
+		//		if (M == Body)
+		//			continue;
+		//		BodySwap(M);
+		//		break;
+		//	}
+		//}
+
 		if (hasAuthority) 
 		{
 			Vector2 V = Vector2.zero;

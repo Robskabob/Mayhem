@@ -102,11 +102,24 @@ public class Mob : MonoBehaviour
 	{
 		int ychunk = (int)((transform.position.y - 50) / 100);
 		Vector2Int newChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100),ychunk);
-		if (ChunkPos != newChunkPos) 
+		if (ChunkPos != newChunkPos)
 		{
 			ChunkPos = newChunkPos;
-			Debug.DrawLine(transform.position + new Vector3(-1, 1, 0), transform.position + new Vector3(1, -1, 0),Color.white,15);
-			Debug.DrawLine(transform.position + new Vector3(-1, -1, 0), transform.position + new Vector3(1, 1, 0), Color.white, 15);
+			ychunk = (ChunkPos.y * 100);
+			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
+			if (Inside == null)
+			{
+				Inside = Physics2D.OverlapCircle(transform.position,1,LayerMask.GetMask("Region")).GetComponent<Region>();
+			}
+			else
+			{ 
+				Inside.MobExit(this);
+			}
+			//Debug.Log(ChunkLoc);
+			Inside = Inside.RegionManager.GlobalRegions[ChunkLoc];
+			Inside.MobEnter(this);
+			//Debug.DrawLine(transform.position + new Vector3(-1, 1, 0), transform.position + new Vector3(1, -1, 0),Color.white,15);
+			//Debug.DrawLine(transform.position + new Vector3(-1, -1, 0), transform.position + new Vector3(1, 1, 0), Color.white, 15);
 		}
 		Count = Collisions.Count;
 		Vector2 Dir = B.GetDir();

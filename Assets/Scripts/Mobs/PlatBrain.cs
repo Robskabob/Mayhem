@@ -17,7 +17,7 @@ public class PlatBrain : Brain
 			wait = time;
 		}
 		wait -= Time.fixedDeltaTime;
-		if((Time.frameCount + GetHashCode()) % 30 == 0) 
+		if((Time.frameCount + gameObject.GetInstanceID()) % 30 == 0) 
 		{
 			foreach(PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
 			{
@@ -26,6 +26,14 @@ public class PlatBrain : Brain
 			}
 			Die();
 		}
+		//foreach (PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
+		//{
+		//	if (Vector2.Distance(PB.transform.position, transform.position) > 100)
+		//	{
+		//		return;
+		//	}
+		//	body.B.Die();
+		//}
 	}
 
 	private void OnDisable()

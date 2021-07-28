@@ -90,20 +90,12 @@ public class Region : MonoBehaviour
 
 	public void MobEnter(Mob body)
 	{
-		foreach (PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
-		{
-			if (Vector2.Distance(PB.transform.position, transform.position) < 100)
-			{
-				body.B.Die();
-				return;
-			}
-		}
-		if (body.Inside != null) 
-		{
-			Debug.Log("double in");
-			body.Inside.MobExit(body);
-		}
-		body.Inside = this;
+		//if (body.Inside != null) 
+		//{
+		//	Debug.Log("double in");
+		//	body.Inside.MobExit(body);
+		//}
+		//body.Inside = this;
 		body.OnDeath += MobDied;
 		Mobs.Add(body);
 		if (!Active)
@@ -115,10 +107,10 @@ public class Region : MonoBehaviour
 
 	public void MobExit(Mob body)
 	{
-		if (body.Inside == this)
-			body.Inside = null;
-		else
-			Debug.Log("was in other");
+		//if (body.Inside == this)
+		//	body.Inside = null;
+		//else
+		//	Debug.Log("was in other");
 		body.OnDeath -= MobDied;
 		Mobs.Remove(body);
 	}
@@ -159,11 +151,11 @@ public class Region : MonoBehaviour
 				Players.Add(PB);
 			return;
 		}
-		Mob body = col.gameObject.GetComponent<Mob>();
-		if (body != null)
-		{
-			MobEnter(body);
-		}
+		//Mob body = col.gameObject.GetComponent<Mob>();
+		//if (body != null)
+		//{
+		//	MobEnter(body);
+		//}
 	}
 	private void OnTriggerExit2D(Collider2D col)
 	{
@@ -188,11 +180,11 @@ public class Region : MonoBehaviour
 			}
 			return;
 		}
-		Mob body = col.gameObject.GetComponent<Mob>();
-		if (body != null)
-		{
-			MobExit(body);
-		}
+		//Mob body = col.gameObject.GetComponent<Mob>();
+		//if (body != null)
+		//{
+		//	MobExit(body);
+		//}
 	}
 
 	public MapGenerator.Chunk[] GetChunkNeighbors() 
@@ -241,7 +233,8 @@ public class Region : MonoBehaviour
 		{
 			Debug.DrawLine(transform.position, transform.position + (Vector3)Offsets[slot], Color.red,5);
 			R = Instantiate(RegionManager.Default, transform.position + (Vector3)Offsets[slot], Quaternion.identity, transform.parent);
-			RegionManager.GlobalRegions.Add(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]),R); 
+			RegionManager.GlobalRegions.Add(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]),R);
+			R.gameObject.SetActive(true);
 			R.chunk = RegionManager.MapGen.GetNewChunk(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]));
 			R.Active = false;
 			R.Objects = new List<Transform>();

@@ -11,6 +11,7 @@ public class RegionManager : MonoBehaviour
 	{
 		Region C = Instantiate(Default, new Vector3(0,0,5), Quaternion.identity, transform);
 		GlobalRegions.Add(Vector2Int.zero, C);
+		C.gameObject.SetActive(true);
 		C.chunk = MapGen.GetNewChunk(Vector2Int.zero);
 
 		for (int i = 0; i < C.Neighbors.Length; i++)
