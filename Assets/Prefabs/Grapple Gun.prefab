@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3729528282477313260}
   - component: {fileID: 3729528282477306642}
   - component: {fileID: 3729528282477313261}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: New Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,10 +89,10 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3729528282477313263}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 3729528284475057293}
   - component: {fileID: 8468225861036411180}
   - component: {fileID: 7768783296498101485}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Grapple Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,6 +157,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  Abandand: 0
+  ExpireTime: 0
+  PickUpAble: 1
   rb: {fileID: 0}
   RopeVis: {fileID: 3729528284475057293}
   PosStack: []
@@ -177,6 +180,7 @@ MonoBehaviour:
   SignStack: 
   Health: 5
   MaxHealth: 5
+  Latched: 0
 --- !u!120 &3729528284475057293
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -297,7 +301,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3729528284475057295}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1

@@ -76,7 +76,7 @@ namespace L33t.Equipment
 			if (inUse == false && !Latched)
 			{
 				LineDistance = 0;
-				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance);
+				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance, 1 << 9);
 				if (r.point == Vector2.zero)
 					return;
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
@@ -128,7 +128,7 @@ namespace L33t.Equipment
 			if (inUse)
 			{
 				Distance = Vector2.Distance(transform.position, PosStack[PosStack.Count - 1]);
-				RaycastHit2D r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 1] - (Vector2)transform.position, Distance - .01f);
+				RaycastHit2D r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 1] - (Vector2)transform.position, Distance - .01f, 1 << 9);
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
 				{
 					Health -= P.Data.Dammage;
@@ -144,7 +144,7 @@ namespace L33t.Equipment
 				}
 				else if (PosStack.Count > 1)
 				{
-					r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 2] - (Vector2)transform.position, Vector2.Distance(PosStack[PosStack.Count - 2], transform.position) - .01f);
+					r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 2] - (Vector2)transform.position, Vector2.Distance(PosStack[PosStack.Count - 2], transform.position) - .01f, 1 << 9);
 					if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P2)
 					{
 						Health -= P2.Data.Dammage;

@@ -18,7 +18,7 @@ namespace L33t.Network
 		public PlayerBrain GamePlayer;
 
 		public List<Equipment.Equipment> Equipment;//shouldent be here
-		public ItemBox ItemBox;
+		public ItemDrop ItemBox;
 		public PlatBrain PlatGuy;
 
 		public override void Start()
@@ -56,9 +56,9 @@ namespace L33t.Network
 
 			for (int i = 0; i < 25; i++)
 			{
-				ItemBox IB = Instantiate(ItemBox);
+				ItemDrop IB = Instantiate(ItemBox);
 				NetworkServer.Spawn(IB.gameObject);
-				IB.Randomize();
+				IB.Phase = 2;
 			}
 			for (int i = 0; i < 5; i++)
 			{

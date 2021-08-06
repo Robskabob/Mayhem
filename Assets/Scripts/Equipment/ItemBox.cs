@@ -151,6 +151,7 @@ namespace L33t.Equipment
 			}
 		}
 
+		[Server]
 		public void SetTime(float Time)
 		{
 			time = Time;

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1803526729514864506}
   - component: {fileID: 8527015237149543310}
   - component: {fileID: 4573069084973821393}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 6657689610651776959}
   - component: {fileID: 6657689610651776953}
   - component: {fileID: 6657689610651776929}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: AI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,6 +143,8 @@ MonoBehaviour:
   PassiveEquipment: []
   wasDropping: 0
   Count: 0
+  Inside: {fileID: 0}
+  ChunkPos: {x: 0, y: 0}
   JumpTime: 0.5
   JumpWait: 0
   Picked: 0
@@ -288,7 +290,7 @@ GameObject:
   - component: {fileID: 63238442214914250}
   - component: {fileID: 4582896191338049423}
   - component: {fileID: 608187459437104947}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}

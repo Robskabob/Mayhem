@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8870729647989547971}
   - component: {fileID: 4910802673673777536}
   - component: {fileID: 2772581432214583084}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,6 +50,7 @@ MonoBehaviour:
   syncInterval: 0.1
   Abandand: 0
   ExpireTime: 0
+  PickUpAble: 1
   ReloadTime: 1
   FireTime: 0.1
   waitTime: 0
@@ -87,7 +88,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8870729647989547981}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -117,7 +118,7 @@ GameObject:
   - component: {fileID: 8870729648356249996}
   - component: {fileID: 8870729648356249986}
   - component: {fileID: 8870729648356249987}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: New Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,10 +196,10 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8870729648356249997}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

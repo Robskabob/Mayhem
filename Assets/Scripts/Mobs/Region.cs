@@ -15,7 +15,7 @@ public class Region : MonoBehaviour
 		new Vector2(-50,100)
 	};
 
-	public RegionManager RegionManager;
+	public static RegionManager RegionManager;
 	//public static Dictionary<Vector2Int, Region> GlobalRegions = new Dictionary<Vector2Int, Region>();
 	//public MapGenerator MapGen;
 

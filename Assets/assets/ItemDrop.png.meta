@@ -1,31 +1,43 @@
 fileFormatVersion: 2
-guid: 39bee40e7844c2c4f908b905422fd6c6
+guid: e1dd949d77e3db64c959dce6e768ea18
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2639993329033232781
-    second: ItemBox_0
+      213: -1270384623846294108
+    second: ItemDrop_0
   - first:
-      213: -567519917004074384
-    second: ItemBox_1
+      213: 7847326747309310048
+    second: ItemDrop_1
   - first:
-      213: -876740303076331550
-    second: ItemBox_2
+      213: 2204528736573814541
+    second: ItemDrop_2
   - first:
-      213: 7852602963405091959
-    second: ItemBox_3
+      213: 230031624440006247
+    second: ItemDrop_3
   - first:
-      213: -1450717293069942735
-    second: ItemBox_D1
+      213: 121669534962205460
+    second: ItemDrop_4
   - first:
-      213: 4517294272215083100
-    second: ItemBox_D2
+      213: 2760229067657677650
+    second: ItemDrop_5
   - first:
-      213: -6616341313291662736
-    second: ItemBox_D3
+      213: -8996644417983042550
+    second: ItemDrop_6
   - first:
-      213: -6507517634184288098
-    second: ItemBox_D4
+      213: -7652397625689644044
+    second: ItemDrop_7
+  - first:
+      213: -8499861691719135000
+    second: ItemDrop_0
+  - first:
+      213: -6497007425991774359
+    second: ItemDrop_1
+  - first:
+      213: 7189909881845674766
+    second: ItemDrop_2
+  - first:
+      213: -654788454052121692
+    second: ItemDrop_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -56,25 +68,25 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: 1
-    mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 7
-  spritePivot: {x: 0.5, y: 0}
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: 0
+  spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -107,23 +119,95 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 1
-    textureFormat: 4
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ItemBox_0
+      name: ItemDrop_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 32
+        height: 16
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e0512953dc6a0a80800000000000000
+      internalID: -8499861691719135000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ItemDrop_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 16
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96f6fae2b2ef5d5a0800000000000000
+      internalID: -6497007425991774359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ItemDrop_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 80
+        width: 32
+        height: 16
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e037b7a91f0b7c360800000000000000
+      internalID: 7189909881845674766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ItemDrop_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 32
+        height: 16
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a33239ce59b9e6f0800000000000000
+      internalID: -654788454052121692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ItemDrop_4
       rect:
         serializedVersion: 2
         x: 0
@@ -137,14 +221,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 37eb295fd0cdc5bd0800000000000000
-      internalID: -2639993329033232781
+      spriteID: 413c8632cc140b100800000000000000
+      internalID: 121669534962205460
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ItemBox_1
+      name: ItemDrop_5
       rect:
         serializedVersion: 2
         x: 0
@@ -158,14 +242,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 072530074a3cf18f0800000000000000
-      internalID: -567519917004074384
+      spriteID: 25b817476bd4e4620800000000000000
+      internalID: 2760229067657677650
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ItemBox_2
+      name: ItemDrop_6
       rect:
         serializedVersion: 2
         x: 0
@@ -179,14 +263,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2efeddae65135d3f0800000000000000
-      internalID: -876740303076331550
+      spriteID: a0cae9f619f752380800000000000000
+      internalID: -8996644417983042550
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ItemBox_3
+      name: ItemDrop_7
       rect:
         serializedVersion: 2
         x: 0
@@ -200,92 +284,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 774b0f35acc0afc60800000000000000
-      internalID: 7852602963405091959
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ItemBox_D1
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 48
-        width: 32
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 130cc05ee440edbe0800000000000000
-      internalID: -1450717293069942735
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ItemBox_D2
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 32
-        width: 32
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c586949f437a0be30800000000000000
-      internalID: 4517294272215083100
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ItemBox_D3
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 16
-        width: 32
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 07a428461a80e24a0800000000000000
-      internalID: -6616341313291662736
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ItemBox_D4
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 0
-        width: 32
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e98ead4a037a0b5a0800000000000000
-      internalID: -6507517634184288098
+      spriteID: 4f3e9b057e83dc590800000000000000
+      internalID: -7652397625689644044
       vertices: []
       indices: 
       edges: []

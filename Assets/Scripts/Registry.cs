@@ -166,6 +166,7 @@ public class Registry
 	public uint SpawnRandomEquipment()
 	{
 		Equipment E = Object.Instantiate(Equipment[Random.Range(0, Equipment.Count)]);
+		Debug.Log("Equip: " + E.gameObject.name);
 		NetworkServer.Spawn(E.gameObject);
 		E.Randomize();
 		return E.netId;

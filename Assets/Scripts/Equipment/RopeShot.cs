@@ -74,7 +74,7 @@ namespace L33t.Equipment
 		{
 			if (inUse == false && !Latched && !inAir)
 			{
-				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance);
+				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance,1<<9);
 				if (r.point == Vector2.zero)
 					return;
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
@@ -120,10 +120,10 @@ namespace L33t.Equipment
 					inUse = false;
 					return;
 				}
-				RaycastHit2D r = Physics2D.Raycast(transform.position, Pos - (Vector2)transform.position, Distance - .01f);
+				RaycastHit2D r = Physics2D.Raycast(transform.position, Pos - (Vector2)transform.position, Distance - .01f, 1 << 9);
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
 				{
-					Debug.Log("Shot dead");
+					//Debug.Log("Shot dead");
 					Health -= P.Data.Dammage;
 					if (Health < 0)
 						inUse = false;

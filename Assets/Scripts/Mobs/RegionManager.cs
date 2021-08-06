@@ -9,6 +9,13 @@ public class RegionManager : MonoBehaviour
 
 	private void Start()
 	{
+		if(Region.RegionManager != null)
+		{
+			Debug.LogError("RegionManager already exists Removing extra");
+			Destroy(this);
+			return;
+		}
+		Region.RegionManager = this;
 		Region C = Instantiate(Default, new Vector3(0,0,5), Quaternion.identity, transform);
 		GlobalRegions.Add(Vector2Int.zero, C);
 		C.gameObject.SetActive(true);

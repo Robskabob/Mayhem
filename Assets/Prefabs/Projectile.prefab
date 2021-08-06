@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1627303036508749383}
   - component: {fileID: 8859228905433925589}
   - component: {fileID: 7552990259549303108}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,11 +99,13 @@ MonoBehaviour:
   rb: {fileID: 8859228905433925589}
   Dir: {x: 0, y: 0}
   Owner: {fileID: 0}
+  Health: 0
   Data:
     LifeTime: 2
     Impulse: 0
     Speed: 0
     Dammage: 0
+    Health: 0
   LifeTime: 0
 --- !u!50 &8859228905433925589
 Rigidbody2D:

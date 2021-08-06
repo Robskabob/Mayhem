@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -784,7 +784,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &351768152
 Transform:
   m_ObjectHideFlags: 0
@@ -3766,6 +3766,81 @@ Transform:
   m_Father: {fileID: 351768152}
   m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2017400633047990191
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2017400632703525602, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_Name
+      value: ItemDrop
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -30.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525630, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2017400632703525631, guid: 8355c9dd25d353644a289b947b3fb270,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -7652397625689644044, guid: e1dd949d77e3db64c959dce6e768ea18,
+        type: 3}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8355c9dd25d353644a289b947b3fb270, type: 3}
 --- !u!1001 &2058586149524893271
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3777,6 +3852,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058586149818690912, guid: 077a6b6091a749549be7507c95458861,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2058586149818690924, guid: 077a6b6091a749549be7507c95458861,
         type: 3}
@@ -3851,6 +3931,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 2631108224710302159, guid: 099c4968915120547a4e4a77e3e561ed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2631108224710302163, guid: 099c4968915120547a4e4a77e3e561ed,
         type: 3}

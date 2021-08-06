@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5162736754810160433}
   - component: {fileID: 5162736754810165967}
   - component: {fileID: 5162736754810160432}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: New Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,10 +89,10 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5162736754810160434}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 5162736755634167120}
   - component: {fileID: 135500527346594033}
   - component: {fileID: 2284460465126167856}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LaserBeamer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,6 +159,7 @@ MonoBehaviour:
   syncInterval: 0.1
   Abandand: 0
   ExpireTime: 0
+  PickUpAble: 1
   LaserVis: {fileID: 5162736755634167120}
   ReloadTime: 0
   FireTime: 0
@@ -166,6 +167,7 @@ MonoBehaviour:
   MaxDistance: 0
   Damage: 0
   HitPos: {x: 0, y: 0}
+  Shoot: 0
   Holder: {fileID: 0}
   MaxHeat: 0
 --- !u!120 &5162736755634167120
@@ -288,7 +290,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5162736755634167122}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
