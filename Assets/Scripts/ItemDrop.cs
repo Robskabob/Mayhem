@@ -127,7 +127,7 @@ public class ItemDrop : NetworkBehaviour
                         else
                             rel = Vector2.zero;
 
-                        RaycastHit2D hit = Physics2D.Raycast(Random.insideUnitCircle * 100 + rel, Vector2.down);
+                        RaycastHit2D hit = Physics2D.Raycast(Random.insideUnitCircle * 100 + rel, Vector2.down,1<<9);
                         if (hit.distance < 3 || hit.point == Vector2.zero)
                         {
                             break;

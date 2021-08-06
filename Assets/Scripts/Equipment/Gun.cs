@@ -271,20 +271,26 @@ namespace L33t.Equipment
 
 
 
-		[Command(ignoreAuthority = true)]
+		//[Command(ignoreAuthority = true)]
 		public void SetVis(bool val)
 		{
-			SetVisRPC(val);
+			LaserVis.enabled = val;
+			Shoot = val;
+			if (isServer)
+				SetVisRPC(val);
 		}
-		[Command(ignoreAuthority = true)]
+		//[Command(ignoreAuthority = true)]
 		public void SetVisPos(Vector3 pos, Vector2 hitpos)
 		{
-			SetVisPosRPC(pos, hitpos);
+			LaserVis.SetPositions(new Vector3[] { pos, hitpos });
+			if(isServer)
+				SetVisPosRPC(pos, hitpos);
 		}
 		[ClientRpc]
 		public void SetVisRPC(bool val)
 		{
 			LaserVis.enabled = val;
+			Shoot = val;
 		}
 		[ClientRpc]
 		public void SetVisPosRPC(Vector3 pos, Vector2 hitpos)
@@ -293,9 +299,8 @@ namespace L33t.Equipment
 		}
 		protected virtual void Fire(Vector2 Pos)
 		{
-			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos - (Vector2)transform.parent.position, MaxDistance);
+			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos - (Vector2)transform.parent.position, MaxDistance, 6656);//layers 9,11,12
 			SetVis(true);
-			Shoot = true;
 			if (r.point == Vector2.zero)
 			{
 				HitPos = (Pos - (Vector2)transform.parent.position).normalized * MaxDistance + (Vector2)transform.position;
@@ -324,9 +329,7 @@ namespace L33t.Equipment
 				waitTime -= Time.deltaTime;
 			else if (!Shoot)
 				waitTime += Time.deltaTime;
-			//
-			SetVis(Shoot);
-			Shoot = false;
+			SetVis(false);
 			//LaserVis
 		}
 

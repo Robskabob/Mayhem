@@ -57,8 +57,8 @@ namespace L33t.Network
 			for (int i = 0; i < 25; i++)
 			{
 				ItemDrop IB = Instantiate(ItemBox);
-				NetworkServer.Spawn(IB.gameObject);
 				IB.Phase = 2;
+				NetworkServer.Spawn(IB.gameObject);
 			}
 			for (int i = 0; i < 5; i++)
 			{

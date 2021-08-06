@@ -39,8 +39,7 @@ namespace L33t.Equipment
 				if (-waitTime > BurnTime)
 				{
 					waitTime = FireTime;
-					Shoot = false;
-					LaserVis.enabled = false;
+					SetVis(false);
 				}
 			}
 			//LaserVis
