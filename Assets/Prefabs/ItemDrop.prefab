@@ -187,7 +187,7 @@ MonoBehaviour:
   - {fileID: -8996644417983042550, guid: e1dd949d77e3db64c959dce6e768ea18, type: 3}
   - {fileID: -7652397625689644044, guid: e1dd949d77e3db64c959dce6e768ea18, type: 3}
   index: 2
-  time: 0.010998018
+  time: 1
   interval: 0.1
 --- !u!114 &2017400632703525601
 MonoBehaviour:
@@ -211,9 +211,9 @@ MonoBehaviour:
   wep: {fileID: -2639993329033232781, guid: 39bee40e7844c2c4f908b905422fd6c6, type: 3}
   sec: {fileID: -567519917004074384, guid: 39bee40e7844c2c4f908b905422fd6c6, type: 3}
   act: {fileID: -876740303076331550, guid: 39bee40e7844c2c4f908b905422fd6c6, type: 3}
-  Phase: 1
-  Eta: 21.761316
-  EtaTime: 637633622870387833
+  Phase: 2
+  Eta: 1
+  EtaTime: 1
 --- !u!114 &2854473670594553065
 MonoBehaviour:
   m_ObjectHideFlags: 0

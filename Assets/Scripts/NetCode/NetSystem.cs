@@ -40,6 +40,18 @@ namespace L33t.Network
 			conn.Send(Join);
 		}
 
+		public override void OnClientDisconnect(NetworkConnection conn)
+		{
+			base.OnClientDisconnect(conn);
+			Debug.Log(conn.identity.netId);
+		}
+
+		public override void OnStopServer()
+		{
+			base.OnStopServer();
+			//kick back to main menu destroy map
+		}
+
 		public override void OnServerReady(NetworkConnection conn)
 		{
 			base.OnServerReady(conn);

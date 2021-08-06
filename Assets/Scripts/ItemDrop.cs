@@ -67,28 +67,35 @@ public class ItemDrop : NetworkBehaviour
         Drop.enabled = true;
         if (Item == null) 
         {
-            Item = NetworkIdentity.spawned[Registry.Reg.SpawnRandomEquipment()].GetComponent<Equipment>();
-            Item.PickUpAble = false;
-            Item.transform.parent = Box.transform;
-            Item.transform.localPosition = Vector3.up;
-            switch (Item)
-            {
-                case WeaponEquipment _:
-                    Box.sprite = wep;
-                    break;
-                case DirectedEquipment _:
-                    Box.sprite = sec;
-                    break;
-                case ActiveEquipment _:
-                    Box.sprite = act;
-                    break;
-                case PasiveEquipment _:
-                    Debug.LogError("there arnt any pasives");
-                    break;
-            }
+            SetItem(Registry.Reg.SpawnRandomEquipment());
         }
         else
             Item.Randomize();
+    }
+
+    [ClientRpc]
+    public void SetItem(uint netId)
+    {
+    
+        Item = NetworkIdentity.spawned[netId].GetComponent<Equipment>();
+        Item.PickUpAble = false;
+        Item.transform.parent = Box.transform;
+        Item.transform.localPosition = Vector3.up;
+        switch (Item)
+        {
+            case WeaponEquipment _:
+                Box.sprite = wep;
+                break;
+            case DirectedEquipment _:
+                Box.sprite = sec;
+                break;
+            case ActiveEquipment _:
+                Box.sprite = act;
+                break;
+            case PasiveEquipment _:
+                Debug.LogError("there aren't any passives");
+                break;
+        }
     }
     void Update()
     {

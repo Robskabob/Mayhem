@@ -17,6 +17,16 @@ namespace L33t.Network
 			PlayerClient.PC.NP = this;
 		}
 
+		public override void OnStopServer()
+		{
+			base.OnStopServer();
+			NetSystem.I.Players.Remove(netId);
+			PlayerBrain PB = NetSystem.I.PlayerBrains[netId];
+			PB.gameObject.SetActive(false);
+			PB.Body.Inside.MobExit(PB.Body);
+			NetSystem.I.PlayerBrains.Remove(netId);
+		}
+
 		public struct PlayerData
 		{
 			public uint brainid;
