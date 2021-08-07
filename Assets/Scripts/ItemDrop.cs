@@ -9,10 +9,39 @@ using System.Linq;
 using Random = UnityEngine.Random;
 
 //[ExecuteAlways]
+//public class ItemDropController : MonoBehaviour
+//{
+//    public CullingGroup cull = new CullingGroup();
+//    public List<ItemDrop> ItemDrops;
+//    public BoundingSphere[] BS;
+//    public Vector2 Center;
+//	private void OnEnable()
+//	{
+//        BS = new BoundingSphere[ItemDrops.Count];
+//        cull.onStateChanged += w;
+//	}
+//	private void Update()
+//	{
+//        for(int i = 0; i < ItemDrops.Count; i++) 
+//        {
+//            BS[i].position = ItemDrops.
+//        }
+//        cull.SetBoundingSpheres(BS);
+//	}
+//	private void w(CullingGroupEvent s)
+//	{
+//		if (s.hasBecomeInvisible) 
+//        {
+//            ItemDrops[s.index].enabled = false;
+//        }
+//	}
+//}
 public class ItemDrop : NetworkBehaviour
 {
     public Transform ItemBox;
     public Equipment Item;
+    [SyncVar]
+    public uint EquipID;
     public SpriteRenderer Drop;
     public SpriteRenderer Box;
     public Collider2D Trigger;
@@ -23,19 +52,14 @@ public class ItemDrop : NetworkBehaviour
     public float Eta;
     public long EtaTime;
 
-    void Start()
-    {
-        if(isServer)
-		{
-            NetworkServer.Spawn(gameObject);
-		}
-    }
+	//  void Start()
+	//  {
+	//      if(isServer)
+	//{
+	//          NetworkServer.Spawn(gameObject);
+	//}
+	//  }
 
-    private void OnEnable()
-    {
-        //Debug.Log($"UtcNow:{DateTime.UtcNow.Ticks} UtcNow+1:{DateTime.UtcNow.AddSeconds(1).Ticks} Diff{DateTime.UtcNow.AddMilliseconds(1).Ticks - DateTime.UtcNow.Ticks}Diffsec{DateTime.UtcNow.AddSeconds(1).Ticks - DateTime.UtcNow.Ticks}");
-        //Debug.Log($"tick: {DateTime.UtcNow.Ticks} file: {DateTime.UtcNow.ToFileTimeUtc()} out{DateTime.FromFileTimeUtc(DateTime.UtcNow.ToFileTimeUtc())} diff{DateTime.UtcNow.Ticks-DateTime.UtcNow.ToFileTimeUtc()}");
-    }
 	public void UpdatePhase(int phase, float Time)
 	{
         Phase = phase;
@@ -65,18 +89,22 @@ public class ItemDrop : NetworkBehaviour
         transform.position = pos;
         UpdatePhase(0,Random.Range(8, 12f));
         Drop.enabled = true;
-        if (Item == null) 
-        {
-            SetItem(Registry.Reg.SpawnRandomEquipment());
-        }
-        else
+        if (Item) 
             Item.Randomize();
+        else
+        {
+            SetItem(pos,Registry.Reg.SpawnRandomEquipment());
+        }
     }
-
-    [ClientRpc]
-    public void SetItem(uint netId)
+    [Command(ignoreAuthority = true)]
+    public void GetItem() 
     {
-    
+        SetItem(transform.position,Item.netId);
+    }
+    [ClientRpc]
+    public void SetItem(Vector2 pos,uint netId)
+    {
+        transform.position = pos;
         Item = NetworkIdentity.spawned[netId].GetComponent<Equipment>();
         Item.PickUpAble = false;
         Item.transform.parent = Box.transform;
@@ -105,14 +133,14 @@ public class ItemDrop : NetworkBehaviour
                 Eta -= Time.deltaTime;
                 if (Eta < 0)
                 {
-                    Trigger.offset = new Vector3(0, 0, -.1f);
                     ItemBox.localPosition = new Vector3(0, 0, -.1f);
-                    UpdatePhase(1,30);
+                    Trigger.offset = ItemBox.localPosition;
+                    UpdatePhase(1,Random.Range(20,40f));
                     Drop.enabled = false;
                     break;
                 }
-                Trigger.offset = new Vector3(0, Eta * Eta / 5, -.1f);
-                ItemBox.localPosition = new Vector3(0, Eta * Eta / 5, -.1f);
+                ItemBox.localPosition = new Vector3(0, Eta * Eta, -.1f);
+                Trigger.offset = ItemBox.localPosition;
                 break;
             case 1:
                 Eta -= Time.deltaTime;
@@ -134,24 +162,25 @@ public class ItemDrop : NetworkBehaviour
                         else
                             rel = Vector2.zero;
 
-                        RaycastHit2D hit = Physics2D.Raycast(Random.insideUnitCircle * 100 + rel, Vector2.down,1<<9);
+                        RaycastHit2D hit = Physics2D.Raycast(Random.insideUnitCircle * 100 + rel, Vector2.down,20,1<<9);
                         if (hit.distance < 3 || hit.point == Vector2.zero)
                         {
-                            break;
+                            return;
                         }
+                        //Debug.Log(hit.collider +" | "+ hit.transform.name);
                         Randomize(hit.point);
                     }
                     break;
                 }
-                Trigger.offset = new Vector3(0, (10 - Eta) * (10 - Eta) / 5, -.1f);
-                ItemBox.localPosition = new Vector3(0, (10-Eta) * (10-Eta) / 5, -.1f);
+                ItemBox.localPosition = new Vector3(0, (10-Eta) * (10-Eta), -.1f);
+                Trigger.offset = ItemBox.localPosition;
                 break;
         }
     }
     private void OnTriggerStay2D(Collider2D col)
     {
         Mob M = col.GetComponent<Mob>();
-        if (M != null && Item != null && M.B.isInteracting())
+        if (M && Item && M.B.isInteracting())
         {
 			switch (Phase) 
             {

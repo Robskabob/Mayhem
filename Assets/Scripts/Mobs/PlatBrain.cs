@@ -17,14 +17,17 @@ public class PlatBrain : Brain
 			wait = time;
 		}
 		wait -= Time.fixedDeltaTime;
-		if((Time.frameCount + gameObject.GetInstanceID()) % 30 == 0) 
+		if (isServer)
 		{
-			foreach(PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
+			if ((Time.frameCount + gameObject.GetInstanceID()) % 30 == 0)
 			{
-				if (Vector2.Distance(PB.transform.position, transform.position) < 100)
-					return;
+				foreach (PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
+				{
+					if (Vector2.Distance(PB.transform.position, transform.position) < 100)
+						return;
+				}
+				Die();
 			}
-			Die();
 		}
 		//foreach (PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
 		//{
@@ -38,7 +41,8 @@ public class PlatBrain : Brain
 
 	private void OnDisable()
 	{
-		Die();
+		if (isServer)
+			Die();
 		//if(!gameObject.activeSelf)
 		//	gameObject.SetActive(true);
 		//enabled = true;
@@ -47,18 +51,17 @@ public class PlatBrain : Brain
 
 	public override void Die()
 	{
-		if (isServer)
-		{
-			Body.Kill();
-			Vector2 rel;
-			if (NetSystem.I.PlayerBrains.Count > 0)
-				rel = NetSystem.I.PlayerBrains.ElementAt(Random.Range(0, NetSystem.I.PlayerBrains.Count)).Value.transform.position;
-			else
-				rel = Vector2.zero;
-			Vector2 pos = Physics2D.Raycast(Random.insideUnitCircle * 100 + rel, Vector2.down).point;
+		if (!isServer)
+			return;
+		Body.Kill();
+		Vector2 rel;
+		if (NetSystem.I.PlayerBrains.Count > 0)
+			rel = NetSystem.I.PlayerBrains.ElementAt(Random.Range(0, NetSystem.I.PlayerBrains.Count)).Value.transform.position;
+		else
+			rel = Vector2.zero;
+		Vector2 pos = Physics2D.Raycast(Random.insideUnitCircle * 100 + rel, Vector2.down).point;
 
-			RpcSpawn(Physics2D.Raycast((Random.insideUnitCircle + Vector2.up) * 50 + pos, Vector2.down).point + Vector2.up);
-		}
+		RpcSpawn(Physics2D.Raycast((Random.insideUnitCircle + Vector2.up) * 50 + pos, Vector2.down).point + Vector2.up);
 	}
 
 	[ClientRpc]

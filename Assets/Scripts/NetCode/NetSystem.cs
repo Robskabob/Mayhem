@@ -25,6 +25,7 @@ namespace L33t.Network
 		{
 			Registry.Reg.Equipment = Equipment;
 			ClientScene.RegisterPrefab(GamePlayer.gameObject, SpawnPlayerBrain, UnSpawn);
+			//ClientScene.RegisterPrefab(ItemBox.gameObject, SpawnPlayerBrain, UnSpawn);
 			NetworkServer.RegisterHandler<JoinMessage>(OnJoinGame);
 			NetworkClient.RegisterHandler<JoinedMessage>(OnJoinedGame);
 			base.Start();
@@ -43,7 +44,6 @@ namespace L33t.Network
 		public override void OnClientDisconnect(NetworkConnection conn)
 		{
 			base.OnClientDisconnect(conn);
-			Debug.Log(conn.identity.netId);
 		}
 
 		public override void OnStopServer()

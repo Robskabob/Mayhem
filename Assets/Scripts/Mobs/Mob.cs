@@ -107,7 +107,7 @@ public class Mob : MonoBehaviour
 			ChunkPos = newChunkPos;
 			ychunk = (ChunkPos.y * 100);
 			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
-			if (Inside != null)
+			if (Inside)
 			{
 				Inside.MobExit(this);
 			}
@@ -306,7 +306,7 @@ public class Mob : MonoBehaviour
 				ShieldWait -= Time.deltaTime;
 		}
 
-		if(Health < 0) 
+		if(Health < 0)
 		{
 			B.Die();
 		}
@@ -319,13 +319,13 @@ public class Mob : MonoBehaviour
 
 	private void OnCollisionEnter2D(Collision2D col)
 	{
-		if(col.gameObject.GetComponent<Projectile>() == null)
+		if(!col.gameObject.GetComponent<Projectile>())
 			Collisions.Add(col);
 	}
 
 	private void OnCollisionExit2D(Collision2D col)
 	{
-		if (col.gameObject.GetComponent<Projectile>() == null)
+		if (!col.gameObject.GetComponent<Projectile>())
 			Collisions.Remove(col);
 	}
 }
