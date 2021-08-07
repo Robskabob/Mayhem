@@ -231,7 +231,7 @@ public class PlayerBrain : Brain
 		Body.rb.velocity = vel;
 		RpcPos(pos,vel);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcPos(Vector2 pos, Vector2 vel)
 	{
 		transform.position = pos;
@@ -243,7 +243,7 @@ public class PlayerBrain : Brain
 		Dir = dir;
 		RpcDir(dir);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcDir(Vector2 dir)
 	{
 		Dir = dir;
@@ -254,7 +254,7 @@ public class PlayerBrain : Brain
 		Look = look;
 		RpcLook(look);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcLook(Vector2 look)
 	{
 		Look = look;
@@ -279,7 +279,7 @@ public class PlayerBrain : Brain
 		}
 		RpcSlot(slot, n);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcSlot(int slot, int n)
 	{
 		switch (n)
@@ -315,7 +315,7 @@ public class PlayerBrain : Brain
 		}
 		RpcMod(state, n);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcMod(bool state, int n)
 	{
 		switch (n)
@@ -337,7 +337,7 @@ public class PlayerBrain : Brain
 		Shooting = shoot;
 		RpcShoot(shoot);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcShoot(bool shoot)
 	{
 		Shooting = shoot;
@@ -348,7 +348,7 @@ public class PlayerBrain : Brain
 		ShootingSide = shoot;
 		RpcShootS(shoot);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcShootS(bool shoot)
 	{
 		ShootingSide = shoot;
@@ -359,7 +359,7 @@ public class PlayerBrain : Brain
 		Activate = ac;
 		RpcActivate(ac);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcActivate(bool ac)
 	{
 		Activate = ac;
@@ -370,7 +370,7 @@ public class PlayerBrain : Brain
 		Interacting = Interact;
 		RpcInteract(Interact);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcInteract(bool Interact)
 	{
 		Interacting = Interact;
@@ -381,7 +381,7 @@ public class PlayerBrain : Brain
 		Dropping = Drop;
 		RpcDrop(Drop);
 	}
-	[ClientRpc(excludeOwner = true)]
+	[ClientRpc(includeOwner = false)]
 	public void RpcDrop(bool Drop)
 	{
 		Dropping = Drop;

@@ -24,8 +24,7 @@ namespace L33t.Network
 		public override void Start()
 		{
 			Registry.Reg.Equipment = Equipment;
-			ClientScene.RegisterPrefab(GamePlayer.gameObject, SpawnPlayerBrain, UnSpawn);
-			//ClientScene.RegisterPrefab(ItemBox.gameObject, SpawnPlayerBrain, UnSpawn);
+			NetworkClient.RegisterPrefab(GamePlayer.gameObject, SpawnPlayerBrain, UnSpawn);
 			NetworkServer.RegisterHandler<JoinMessage>(OnJoinGame);
 			NetworkClient.RegisterHandler<JoinedMessage>(OnJoinedGame);
 			base.Start();
@@ -89,7 +88,7 @@ namespace L33t.Network
 		joined.Player = PB.netId;
 		NetworkServer.SendToAll(joined);
 	}
-	public void OnJoinedGame(NetworkConnection conn, JoinedMessage Join)
+	public void OnJoinedGame(JoinedMessage Join)
 	{
 		//Debug.Log(NetworkIdentity.spawned.Count+"C");
 		//Debug.Log(Join.id+"|"+Join.Player);

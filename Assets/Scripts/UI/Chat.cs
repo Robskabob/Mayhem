@@ -281,7 +281,7 @@ public static class StatCommand
 	}
 
 
-	public static void OnStatSet(NetworkConnection conn, SetStatMessage Stat)
+	public static void OnStatSet(SetStatMessage Stat)
 	{
 		NetworkIdentity.spawned.TryGetValue(Stat.NetId,out NetworkIdentity NI);
 		Type T = GetType(Stat.type);

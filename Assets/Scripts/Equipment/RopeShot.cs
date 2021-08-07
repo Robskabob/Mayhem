@@ -103,7 +103,7 @@ namespace L33t.Equipment
 			Pos = pos;
 			RpcLatch(pos);
 		}
-		[ClientRpc(excludeOwner = true)]
+		[ClientRpc(includeOwner = false)]
 		public void RpcLatch(Vector2 pos)
 		{
 			Pos = pos;

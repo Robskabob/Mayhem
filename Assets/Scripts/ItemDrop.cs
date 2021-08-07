@@ -96,7 +96,7 @@ public class ItemDrop : NetworkBehaviour
             SetItem(pos,Registry.Reg.SpawnRandomEquipment());
         }
     }
-    [Command(ignoreAuthority = true)]
+    [Command(requiresAuthority = false)]
     public void GetItem() 
     {
         SetItem(transform.position,Item.netId);

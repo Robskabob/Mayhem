@@ -108,7 +108,7 @@ namespace L33t.Equipment
 		{
 			RpcGrapple(pos, dist);
 		}
-		[ClientRpc(excludeOwner = true)]
+		[ClientRpc(includeOwner = false)]
 		public void RpcGrapple(Vector2 pos, float dist)
 		{
 			PosStack = new List<Vector2>() { pos };

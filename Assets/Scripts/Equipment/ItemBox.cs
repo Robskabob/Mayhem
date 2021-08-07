@@ -26,7 +26,7 @@ namespace L33t.Equipment
 			GetState();
 		}
 
-		[Command(ignoreAuthority = true)]
+		[Command(requiresAuthority = false)]
 		public void GetState()
 		{
 			uint id = 0;
