@@ -113,6 +113,10 @@ public class Mob : MonoBehaviour
 			}
 			//Debug.Log(ChunkLoc);
 			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
+			if(B is PlayerBrain) 
+			{
+				Debug.Log($"loc {ChunkLoc} !null?{Inside}");
+			}
 			Inside.MobEnter(this);
 			//Debug.DrawLine(transform.position + new Vector3(-1, 1, 0), transform.position + new Vector3(1, -1, 0),Color.white,15);
 			//Debug.DrawLine(transform.position + new Vector3(-1, -1, 0), transform.position + new Vector3(1, 1, 0), Color.white, 15);
