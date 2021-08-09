@@ -21,7 +21,7 @@ namespace L33t.Equipment
 				}
 				else
 				{
-					Shoot = true;
+					SetVis(true);
 					clip--;
 				}
 			}

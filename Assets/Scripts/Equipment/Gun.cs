@@ -276,8 +276,8 @@ namespace L33t.Equipment
 		{
 			LaserVis.enabled = val;
 			Shoot = val;
-			if (isServer)
-				SetVisRPC(val);
+			//if (isServer)
+			//	SetVisRPC(val);
 		}
 		//[Command(ignoreAuthority = true)]
 		public void SetVisPos(Vector3 pos, Vector2 hitpos)
@@ -329,7 +329,8 @@ namespace L33t.Equipment
 				waitTime -= Time.deltaTime;
 			else if (!Shoot)
 				waitTime += Time.deltaTime;
-			SetVis(false);
+			LaserVis.enabled = Shoot;
+			Shoot = false;
 			//LaserVis
 		}
 

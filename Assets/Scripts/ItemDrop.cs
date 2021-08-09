@@ -40,8 +40,8 @@ public class ItemDrop : NetworkBehaviour
 {
     public Transform ItemBox;
     public Equipment Item;
-    [SyncVar]
-    public uint EquipID;
+    //[SyncVar]
+    //public uint EquipID;
     public SpriteRenderer Drop;
     public SpriteRenderer Box;
     public Collider2D Trigger;
@@ -52,13 +52,35 @@ public class ItemDrop : NetworkBehaviour
     public float Eta;
     public long EtaTime;
 
-	//  void Start()
-	//  {
-	//      if(isServer)
-	//{
-	//          NetworkServer.Spawn(gameObject);
-	//}
-	//  }
+    public override void OnStartClient()
+    {
+        //StartCoroutine(StartClient());
+    }
+    //public IEnumerator StartClient()
+    //{
+    //    float time = Time.time;
+    //    yield return new WaitUntil(() => NetworkClient.isConnected && EquipID != 0);
+    //    Debug.Log($"{Time.time - time} | {EquipID} ");
+    //    Item = NetworkIdentity.spawned[EquipID].GetComponent<Equipment>();
+    //    Item.PickUpAble = false;
+    //    Item.transform.parent = Box.transform;
+    //    Item.transform.localPosition = Vector3.up;
+    //    switch (Item)
+    //    {
+    //        case WeaponEquipment _:
+    //            Box.sprite = wep;
+    //            break;
+    //        case DirectedEquipment _:
+    //            Box.sprite = sec;
+    //            break;
+    //        case ActiveEquipment _:
+    //            Box.sprite = act;
+    //            break;
+    //        case PasiveEquipment _:
+    //            Debug.LogError("there aren't any passives");
+    //            break;
+    //    }
+    //}
 
 	public void UpdatePhase(int phase, float Time)
 	{
@@ -93,18 +115,23 @@ public class ItemDrop : NetworkBehaviour
             Item.Randomize();
         else
         {
-            SetItem(pos,Registry.Reg.SpawnRandomEquipment());
+            //EquipID = Registry.Reg.SpawnRandomEquipment();
+            if(isServerOnly)
+                Item = NetworkIdentity.spawned[Registry.Reg.SpawnRandomEquipment()].GetComponent<Equipment>();
+			else
+			{
+                SetItem(pos, Registry.Reg.SpawnRandomEquipment());
+                return;
+			}
         }
-    }
-    [Command(requiresAuthority = false)]
-    public void GetItem() 
-    {
-        SetItem(transform.position,Item.netId);
+        SetItem(pos,Item.netId);
     }
     [ClientRpc]
     public void SetItem(Vector2 pos,uint netId)
     {
         transform.position = pos;
+        //if (!Item || netId == Item.netId)
+        //    return;
         Item = NetworkIdentity.spawned[netId].GetComponent<Equipment>();
         Item.PickUpAble = false;
         Item.transform.parent = Box.transform;
