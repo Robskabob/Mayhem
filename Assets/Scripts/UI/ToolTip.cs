@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 public class ToolTip : MonoBehaviour
 {
     public Cam Cam;
+    public Equipment Item;
     public Text text;
 
     void Start()
@@ -18,22 +18,39 @@ public class ToolTip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = (Vector2)Cam.Camera.ScreenToWorldPoint(Input.mousePosition);
-
-        Collider2D col = Physics2D.OverlapCircle(transform.position,1,1<<10);
-        if (col == null)
-            return;
-        Equipment E = col.GetComponentInParent<Equipment>();
-        if (E != null)
+        //transform.position = (Vector2)Cam.Camera.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mouse = Cam.Camera.ScreenToWorldPoint(Input.mousePosition);
+        if (Input.GetMouseButtonDown(0))
         {
-            text.text = E.PrintStats();
-            wait = .1f;
+            Collider2D col = Physics2D.OverlapCircle(mouse, 1, 1 << 10);
+            if (col == null)
+                return;
+            Equipment E = col.GetComponentInParent<Equipment>();
+            if (E != null)
+            {
+                if (Item && Vector2.Distance(E.transform.position, mouse) >= Vector2.Distance(Item.transform.position, mouse))
+                    return;
+                Item = E;
+                text.text = Item.PrintStats();
+                wait = 1;
+                return;
+            }
             return;
         }
-        wait -= Time.deltaTime;
-        if (wait < 0)
+
+        if (Item) 
         {
-            text.text = "";
+            transform.position = Item.transform.position;
+            if (2 < Vector2.Distance(Item.transform.position, mouse))
+            {
+                wait -= Time.deltaTime;
+                if (wait < 0)
+                {
+                    text.text = "";
+                }
+            }
+            else
+                wait = 1;
         }
     }
 }
