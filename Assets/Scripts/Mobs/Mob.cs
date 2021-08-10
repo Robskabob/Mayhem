@@ -110,12 +110,20 @@ public class Mob : MonoBehaviour
 			if (Inside)
 			{
 				Inside.MobExit(this);
+				if (B is PlayerBrain)
+				{
+					//Inside.Players.Remove();
+					Inside.OnPlayerExit(B as PlayerBrain);
+					//Debug.Log($"loc {ChunkLoc} !null?{Inside}");
+				}
 			}
 			//Debug.Log(ChunkLoc);
 			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
 			if(B is PlayerBrain) 
 			{
-				Debug.Log($"loc {ChunkLoc} !null?{Inside}");
+				//Inside.Players.Add();
+				Inside.OnPlayerEnter(B as PlayerBrain);
+				//Debug.Log($"loc {ChunkLoc} !null?{Inside}");
 			}
 			Inside.MobEnter(this);
 			//Debug.DrawLine(transform.position + new Vector3(-1, 1, 0), transform.position + new Vector3(1, -1, 0),Color.white,15);
@@ -318,7 +326,17 @@ public class Mob : MonoBehaviour
 
 	private void Start()
 	{
-		//Equipment[ActiveSlot].Pickup(this);
+		if (B is PlayerBrain)
+		{
+			int ychunk = (int)((transform.position.y - 50) / 100);
+			ChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100), ychunk);
+			ychunk = (ChunkPos.y * 100);
+			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
+			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
+
+			Inside.OnNeighborActivated();
+			Inside.OnPlayerEnter(B as PlayerBrain);
+		}
 	}
 
 	private void OnCollisionEnter2D(Collision2D col)

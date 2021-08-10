@@ -125,7 +125,33 @@ public class Region : MonoBehaviour
 		enabled = true;
 		body.rb.simulated = true;
 	}
-
+	public void OnPlayerEnter(PlayerBrain PB)
+	{
+		Players.Add(PB);
+		if (Players.Count == 0)
+		{
+			for (int i = 0; i < Neighbors.Length; i++)
+			{
+				if (Neighbors[i] != null)
+					Neighbors[i].OnNeighborActivated();
+			}
+		}
+		OnNeighborActivated();
+	}
+	public void OnPlayerExit(PlayerBrain PB)
+	{
+		Players.Remove(PB);
+		if (Players.Count == 0)
+		{
+			OnNeighborDeActivated();
+			for (int i = 0; i < Neighbors.Length; i++)
+			{
+				if (Neighbors[i] != null)
+					Neighbors[i].OnNeighborDeActivated();
+			}
+		}
+		return;
+	}
 	private void OnTriggerEnter2D(Collider2D col)
 	{
 		//NetworkBehaviour NB = col.gameObject.GetComponent<NetworkBehaviour>();
@@ -134,23 +160,23 @@ public class Region : MonoBehaviour
 		//	Objects.Add(NB);
 		//}
 		Objects.Add(col.transform);
-		PlayerBrain PB = col.gameObject.GetComponent<PlayerBrain>();
-		if (PB != null)
-		{
-			if (Players.Count == 0)
-			{
-				for (int i = 0; i < Neighbors.Length; i++)
-				{
-					if(Neighbors[i] != null)
-						Neighbors[i].OnNeighborActivated();
-				}
-				Players.Add(PB);
-				OnNeighborActivated();
-			}
-			else
-				Players.Add(PB);
-			return;
-		}
+		//PlayerBrain PB = col.gameObject.GetComponent<PlayerBrain>();
+		//if (PB != null)
+		//{
+		//	if (Players.Count == 0)
+		//	{
+		//		for (int i = 0; i < Neighbors.Length; i++)
+		//		{
+		//			if(Neighbors[i] != null)
+		//				Neighbors[i].OnNeighborActivated();
+		//		}
+		//		Players.Add(PB);
+		//		OnNeighborActivated();
+		//	}
+		//	else
+		//		Players.Add(PB);
+		//	return;
+		//}
 		//Mob body = col.gameObject.GetComponent<Mob>();
 		//if (body != null)
 		//{
@@ -165,21 +191,21 @@ public class Region : MonoBehaviour
 		//	Objects.Remove(NB);
 		//}
 		Objects.Remove(col.transform);
-		PlayerBrain PB = col.gameObject.GetComponent<PlayerBrain>();
-		if (PB != null)
-		{
-			Players.Remove(PB);
-			if (Players.Count == 0)
-			{
-				OnNeighborDeActivated();
-				for (int i = 0; i < Neighbors.Length; i++)
-				{
-					if(Neighbors[i] != null)
-						Neighbors[i].OnNeighborDeActivated();
-				}
-			}
-			return;
-		}
+		//PlayerBrain PB = col.gameObject.GetComponent<PlayerBrain>();
+		//if (PB != null)
+		//{
+		//	Players.Remove(PB);
+		//	if (Players.Count == 0)
+		//	{
+		//		OnNeighborDeActivated();
+		//		for (int i = 0; i < Neighbors.Length; i++)
+		//		{
+		//			if(Neighbors[i] != null)
+		//				Neighbors[i].OnNeighborDeActivated();
+		//		}
+		//	}
+		//	return;
+		//}
 		//Mob body = col.gameObject.GetComponent<Mob>();
 		//if (body != null)
 		//{
