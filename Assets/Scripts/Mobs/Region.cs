@@ -68,11 +68,12 @@ public class Region : MonoBehaviour
 	public void OnNeighborActivated()
 	{
 		OnActivate();
-		if (loadLevel < 1)
+		if (loadLevel < 10)
 		{
-			loadLevel ++;
 			FirstEnter();
 		}
+		else
+			loadLevel = 15;
 	}
 	public void OnNeighborDeActivated()
 	{
@@ -128,6 +129,7 @@ public class Region : MonoBehaviour
 	public void OnPlayerEnter(PlayerBrain PB)
 	{
 		Players.Add(PB);
+
 		if (Players.Count == 0)
 		{
 			for (int i = 0; i < Neighbors.Length; i++)
@@ -225,21 +227,42 @@ public class Region : MonoBehaviour
 		return Chunk;
 	}
 
-	public void FirstEnter() 
+	public void FirstEnter()
 	{
-
+		loadLevel = 10;
 		if (Players.Count == 0)
 		{
 			//Debug.LogError("No Player");
 			//firstload = false;
 			//return;
 		}
-		else if(Vector2.Distance(Players[0].transform.position,transform.position) > 300)
+		else if (Vector2.Distance(Players[0].transform.position, transform.position) > 300)
 		{
 			Debug.LogError("Too far but has Player?");
 			loadLevel = 0;
 			return;
 		}
+		UpdateNear();
+
+		RegionManager.MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref chunk, GetChunkNeighbors(), this);
+	}
+
+	private void UpdateNear()
+	{
+		loadLevel = 3;
+		for (int i = 0; i < Neighbors.Length; i++)
+		{
+			if (Neighbors[i] == null)
+			{
+				Neighbors[i].GenNear();
+			}
+			else
+				Debug.DrawLine(transform.position, Neighbors[i].transform.position, Color.cyan, 5);
+		}
+	}
+	private void GenNear()
+	{
+		loadLevel = 2;
 		for (int i = 0; i < Neighbors.Length; i++)
 		{
 			if (Neighbors[i] == null)
@@ -247,10 +270,8 @@ public class Region : MonoBehaviour
 				GeneateNew(i);
 			}
 			else
-			Debug.DrawLine(transform.position, Neighbors[i].transform.position,Color.green,5);
+				Debug.DrawLine(transform.position, Neighbors[i].transform.position, Color.green, 5);
 		}
-
-		RegionManager.MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position),ref chunk, GetChunkNeighbors(),this);
 	}
 
 	public void GeneateNew(int slot) 
@@ -260,6 +281,7 @@ public class Region : MonoBehaviour
 			Debug.DrawLine(transform.position, transform.position + (Vector3)Offsets[slot], Color.red,5);
 			R = Instantiate(RegionManager.Default, transform.position + (Vector3)Offsets[slot], Quaternion.identity, transform.parent);
 			RegionManager.GlobalRegions.Add(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]),R);
+			Debug.Log("Added: " + Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]));
 			R.gameObject.SetActive(true);
 			R.chunk = RegionManager.MapGen.GetNewChunk(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]));
 			R.Active = false;

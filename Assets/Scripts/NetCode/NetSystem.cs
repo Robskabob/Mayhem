@@ -71,13 +71,13 @@ namespace L33t.Network
 				IB.Phase = 2;
 				NetworkServer.Spawn(IB.gameObject);
 			}
-			for (int i = 0; i < 5; i++)
-			{
-				PlatBrain PlB = Instantiate(PlatGuy);
-				PlB.transform.position = new Vector3(300, 300, 0) * Random.insideUnitCircle;
-				NetworkServer.Spawn(PlB.gameObject);
-				PlB.Die();
-			}
+			//for (int i = 0; i < 5; i++)
+			//{
+			//	PlatBrain PlB = Instantiate(PlatGuy);
+			//	PlB.transform.position = new Vector3(300, 300, 0) * Random.insideUnitCircle;
+			//	NetworkServer.Spawn(PlB.gameObject);
+			//	PlB.Die();
+			//}
 
 			//Players.Add(NP.netId, NP);
 			//PlayerBrains.Add(NP.netId, PB);

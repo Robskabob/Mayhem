@@ -42,6 +42,8 @@ public class RegionManager : MonoBehaviour
 			else
 				Debug.DrawLine(transform.position, C.Neighbors[i].transform.position, Color.green, 5);
 		}
+		gameObject.SetActive(false);
+		enabled = false;
 
 		MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref C.chunk, C.GetChunkNeighbors(), C);
 	}

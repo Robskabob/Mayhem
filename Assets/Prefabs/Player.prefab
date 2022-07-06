@@ -105,7 +105,7 @@ MonoBehaviour:
   wasDropping: 0
   Count: 0
   Inside: {fileID: 0}
-  ChunkPos: {x: 0, y: 0}
+  ChunkPos: {x: -1234, y: 1234}
   JumpTime: 0.5
   JumpWait: 0
   Picked: 0
@@ -220,7 +220,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 099c4968915120547a4e4a77e3e561ed
   hasSpawned: 0
 --- !u!1 &2638255778563060813
 GameObject:

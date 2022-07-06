@@ -22,8 +22,11 @@ namespace L33t.Network
 			base.OnStopServer();
 			NetSystem.I.Players.Remove(netId);
 			PlayerBrain PB = NetSystem.I.PlayerBrains[netId];
-			PB.gameObject.SetActive(false);
-			PB.Body.Inside.MobExit(PB.Body);
+			PB.gameObject.SetActive(false); 
+
+			if (Region.RegionManager.enabled)
+				PB.Body.Inside.MobExit(PB.Body);
+
 			NetSystem.I.PlayerBrains.Remove(netId);
 		}
 

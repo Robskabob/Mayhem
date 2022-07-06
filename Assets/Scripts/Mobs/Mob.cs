@@ -37,7 +37,7 @@ public class Mob : MonoBehaviour
 	public int Count;
 
 	public Region Inside;
-	public Vector2Int ChunkPos;
+	public Vector2Int ChunkPos = new Vector2Int(-1234,1234);
 	public delegate void MobEvent(Mob M);
 	public event MobEvent OnDeath;
 	public void Kill() 
@@ -100,34 +100,23 @@ public class Mob : MonoBehaviour
 
 	protected virtual void FixedUpdate()
 	{
-		int ychunk = (int)((transform.position.y - 50) / 100);
-		Vector2Int newChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100),ychunk);
-		if (ChunkPos != newChunkPos)
+		if (Region.RegionManager.enabled)
 		{
-			ChunkPos = newChunkPos;
-			ychunk = (ChunkPos.y * 100);
-			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
-			if (Inside)
+			int ychunk = (int)((transform.position.y - 50) / 100);
+			Vector2Int newChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100), ychunk);
+			if (ChunkPos != newChunkPos)
 			{
-				Inside.MobExit(this);
-				if (B is PlayerBrain)
-				{
-					//Inside.Players.Remove();
-					Inside.OnPlayerExit(B as PlayerBrain);
-					//Debug.Log($"loc {ChunkLoc} !null?{Inside}");
-				}
+				ChunkPos = newChunkPos;
+				ychunk = (ChunkPos.y * 100);
+				Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
+				Vector3 CL = (Vector3)(Vector2)ChunkLoc;
+				Debug.Log(ChunkLoc + " | " + CL);
+				Debug.DrawLine(CL + new Vector3(-50, 50, 0), CL + new Vector3(50, -50, 0), Color.white, 15);
+				Debug.DrawLine(CL + new Vector3(-50, -50, 0), CL + new Vector3(50, 50, 0), Color.white, 15);
+
+				if (Region.RegionManager.enabled)
+					MoveChunk(Region.RegionManager.GlobalRegions[ChunkLoc]);
 			}
-			//Debug.Log(ChunkLoc);
-			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
-			if(B is PlayerBrain) 
-			{
-				//Inside.Players.Add();
-				Inside.OnPlayerEnter(B as PlayerBrain);
-				//Debug.Log($"loc {ChunkLoc} !null?{Inside}");
-			}
-			Inside.MobEnter(this);
-			//Debug.DrawLine(transform.position + new Vector3(-1, 1, 0), transform.position + new Vector3(1, -1, 0),Color.white,15);
-			//Debug.DrawLine(transform.position + new Vector3(-1, -1, 0), transform.position + new Vector3(1, 1, 0), Color.white, 15);
 		}
 		Count = Collisions.Count;
 		Vector2 Dir = B.GetDir();
@@ -155,6 +144,25 @@ public class Mob : MonoBehaviour
 			}
 		}
 		JumpWait -= Time.fixedDeltaTime;
+	}
+
+	private void MoveChunk(Region region)
+	{
+		if (Inside)
+		{
+			if (B is PlayerBrain)
+			{
+				region.OnPlayerEnter(B as PlayerBrain);
+				Inside.OnPlayerExit(B as PlayerBrain);
+			}
+			Inside.MobExit(this);
+		}
+		else if (B is PlayerBrain)
+		{
+			region.OnPlayerEnter(B as PlayerBrain);
+		}
+		Inside = region;
+		region.MobEnter(this);
 	}
 
 	public void Drop(Equipment E)
@@ -326,17 +334,17 @@ public class Mob : MonoBehaviour
 
 	private void Start()
 	{
-		if (B is PlayerBrain)
-		{
-			int ychunk = (int)((transform.position.y - 50) / 100);
-			ChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100), ychunk);
-			ychunk = (ChunkPos.y * 100);
-			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
-			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
-
-			Inside.OnNeighborActivated();
-			Inside.OnPlayerEnter(B as PlayerBrain);
-		}
+		//if (B is PlayerBrain)
+		//{
+		//	int ychunk = (int)((transform.position.y - 50) / 100);
+		//	ChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100), ychunk);
+		//	ychunk = (ChunkPos.y * 100);
+		//	Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
+		//	Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
+		//
+		//	Inside.OnNeighborActivated();
+		//	Inside.OnPlayerEnter(B as PlayerBrain);
+		//}
 	}
 
 	private void OnCollisionEnter2D(Collision2D col)

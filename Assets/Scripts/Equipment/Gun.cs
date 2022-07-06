@@ -3,6 +3,23 @@ using UnityEngine;
 
 namespace L33t.Equipment
 {
+	public class ModulusGun// : WeaponEquipment 
+	{
+		public class loader
+		{
+			
+		}
+
+		public class FireMode 
+		{
+			
+		}
+
+		public class dammager 
+		{
+		
+		}
+	}
 	public class Gun : WeaponEquipment
 	{
 		public float ReloadTime;
