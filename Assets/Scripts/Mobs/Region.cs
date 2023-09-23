@@ -27,7 +27,17 @@ public class Region : MonoBehaviour
 	public List<PlayerBrain> Players;
 	public List<Mob> Mobs;
 	public bool Active;
-	public int loadLevel;
+	public LoadLevel loadLevel;
+
+	public enum LoadLevel
+	{
+		MinLoad = 0,
+		Preloaded = 1,
+		loaded = 2,
+		Entered = 3,		
+		UnLoaded = 4,
+		PlayerLeft = 5,
+	}
 
 	public List<Transform> Objects;
 	public Transform Contents;
@@ -57,6 +67,18 @@ public class Region : MonoBehaviour
 		Active = false;
 		SR.color = new Color(.5f, 0, 0);
 		Contents.gameObject.SetActive(false);
+		if(loadLevel < LoadLevel.loaded)
+        {
+			Debug.LogError("UnloadUnGened");
+			return;
+        }
+
+		if (loadLevel == LoadLevel.loaded)
+			loadLevel = LoadLevel.UnLoaded;
+		else if (loadLevel == LoadLevel.Entered)
+			loadLevel = LoadLevel.PlayerLeft;
+		//else
+		//	Debug.Log("Wut " + loadLevel);
 
 		for (int i = 0; i < Mobs.Count; i++)
 		{
@@ -68,10 +90,9 @@ public class Region : MonoBehaviour
 	public void OnNeighborActivated()
 	{
 		OnActivate();
-		if (loadLevel < 1)
+		if (loadLevel < LoadLevel.loaded)
 		{
-			loadLevel ++;
-			FirstEnter();
+			ResolveNeighbors();
 		}
 	}
 	public void OnNeighborDeActivated()
@@ -128,25 +149,35 @@ public class Region : MonoBehaviour
 	public void OnPlayerEnter(PlayerBrain PB)
 	{
 		Players.Add(PB);
-		if (Players.Count == 0)
+		if (loadLevel < LoadLevel.loaded) 
 		{
-			for (int i = 0; i < Neighbors.Length; i++)
-			{
-				if (Neighbors[i] != null)
-					Neighbors[i].OnNeighborActivated();
-			}
+			Debug.Log("Resort");
+			ResolveNeighbors();
 		}
+		loadLevel = LoadLevel.Entered;
 		OnNeighborActivated();
+		for (int i = 0; i < Neighbors.Length; i++)
+		{
+			if (Neighbors[i] != null)
+				Neighbors[i].OnNeighborActivated();
+		}
 	}
 	public void OnPlayerExit(PlayerBrain PB)
 	{
+		if (loadLevel < LoadLevel.Entered)
+		{
+			Debug.LogError("LeftNotEnterd");
+			ResolveNeighbors();
+		}
+		loadLevel = LoadLevel.PlayerLeft;
+
 		Players.Remove(PB);
 		if (Players.Count == 0)
 		{
 			OnNeighborDeActivated();
 			for (int i = 0; i < Neighbors.Length; i++)
 			{
-				if (Neighbors[i] != null)
+				if (Neighbors[i] != null || Neighbors[i].loadLevel < LoadLevel.loaded)
 					Neighbors[i].OnNeighborDeActivated();
 			}
 		}
@@ -225,20 +256,52 @@ public class Region : MonoBehaviour
 		return Chunk;
 	}
 
-	public void FirstEnter() 
+	public void LoadNeighbors()
+	{
+		for (int i = 0; i < Neighbors.Length; i++)
+		{
+			if (Neighbors[i].loadLevel < LoadLevel.loaded)
+			{
+				Neighbors[i].ResolveNeighbors();
+			}
+			else
+				Debug.DrawLine(transform.position, Neighbors[i].transform.position, Color.green, 5);
+		}
+	}
+	public void ResolveNeighbors()
+	{
+		Debug.Log(transform.position);
+		for (int i = 0; i < Neighbors.Length; i++)
+		{
+			if (Neighbors[i].loadLevel < LoadLevel.Preloaded)
+			{
+				Neighbors[i].GenNeighbors();
+			}
+			else
+				Debug.DrawLine(transform.position, Neighbors[i].transform.position, Color.green, 5);
+		}
+		RegionManager.MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position),ref chunk, GetChunkNeighbors(),this);
+		loadLevel = LoadLevel.loaded;
+	}
+	public void GenNeighbors() 
 	{
 
-		if (Players.Count == 0)
+		//if (Players.Count == 0)
+		//{
+		//	Debug.LogError("No Player");
+		//	//firstload = false;
+		//	//return;
+		//}
+		//else
+		//if(Vector2.Distance(Players[0].transform.position,transform.position) > 300)
+		//{
+		//	Debug.LogError("Too far but has Player? Player Check removed");
+		//	loadLevel = 0;
+		//	return;
+		//}
+		if (loadLevel >= LoadLevel.Preloaded)
 		{
-			//Debug.LogError("No Player");
-			//firstload = false;
-			//return;
-		}
-		else if(Vector2.Distance(Players[0].transform.position,transform.position) > 300)
-		{
-			Debug.LogError("Too far but has Player?");
-			loadLevel = 0;
-			return;
+			Debug.LogError("Already PreLoaded");
 		}
 		for (int i = 0; i < Neighbors.Length; i++)
 		{
@@ -249,8 +312,7 @@ public class Region : MonoBehaviour
 			else
 			Debug.DrawLine(transform.position, Neighbors[i].transform.position,Color.green,5);
 		}
-
-		RegionManager.MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position),ref chunk, GetChunkNeighbors(),this);
+		//this needs more then just here
 	}
 
 	public void GeneateNew(int slot) 
@@ -264,12 +326,13 @@ public class Region : MonoBehaviour
 			R.chunk = RegionManager.MapGen.GetNewChunk(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]));
 			R.Active = false;
 			R.Objects = new List<Transform>();
-			R.loadLevel = 0;
+			R.loadLevel = LoadLevel.MinLoad;
 			R.Neighbors = new Region[6];
 			R.Players = new List<PlayerBrain>();
 			R.Mobs = new List<Mob>();
 			R.SR.color = Color.gray;
 			SR.color = Color.yellow;
+			loadLevel = LoadLevel.Preloaded;
 		}
 		else
 			Debug.DrawLine(transform.position, R.transform.position, Color.yellow, 5);

@@ -40,6 +40,10 @@ public class Mob : MonoBehaviour
 	public Vector2Int ChunkPos;
 	public delegate void MobEvent(Mob M);
 	public event MobEvent OnDeath;
+
+	public Transform T1;
+	public Transform T2;
+
 	public void Kill() 
 	{
 		OnDeath?.Invoke(this);
@@ -101,33 +105,33 @@ public class Mob : MonoBehaviour
 	protected virtual void FixedUpdate()
 	{
 		int ychunk = (int)((transform.position.y - 50) / 100);
-		Vector2Int newChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100),ychunk);
+		Vector2Int newChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 + ychunk % 2))) / 100),ychunk);
 		if (ChunkPos != newChunkPos)
 		{
 			ChunkPos = newChunkPos;
 			ychunk = (ChunkPos.y * 100);
 			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
-			if (Inside)
+			Debug.Log(ChunkLoc);
+			Region old = Inside;
+			if (old)
 			{
 				Inside.MobExit(this);
 				if (B is PlayerBrain)
 				{
-					//Inside.Players.Remove();
 					Inside.OnPlayerExit(B as PlayerBrain);
-					//Debug.Log($"loc {ChunkLoc} !null?{Inside}");
+					//T1.transform.position = (Vector2)old.transform.position;
 				}
 			}
-			//Debug.Log(ChunkLoc);
+
 			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
+
 			if(B is PlayerBrain) 
 			{
-				//Inside.Players.Add();
+				//T2.transform.position = (Vector2)Inside.transform.position;
 				Inside.OnPlayerEnter(B as PlayerBrain);
-				//Debug.Log($"loc {ChunkLoc} !null?{Inside}");
 			}
 			Inside.MobEnter(this);
-			//Debug.DrawLine(transform.position + new Vector3(-1, 1, 0), transform.position + new Vector3(1, -1, 0),Color.white,15);
-			//Debug.DrawLine(transform.position + new Vector3(-1, -1, 0), transform.position + new Vector3(1, 1, 0), Color.white, 15);
+
 		}
 		Count = Collisions.Count;
 		Vector2 Dir = B.GetDir();

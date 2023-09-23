@@ -21,28 +21,31 @@ public class RegionManager : MonoBehaviour
 		C.gameObject.SetActive(true);
 		C.chunk = MapGen.GetNewChunk(Vector2Int.zero);
 
-		for (int i = 0; i < C.Neighbors.Length; i++)
-		{
-			if (C.Neighbors[i] == null)
-			{
-				C.GeneateNew(i);
+		//for (int i = 0; i < C.Neighbors.Length; i++)
+		//{
+		//	if (C.Neighbors[i] == null)
+		//	{
+		//		C.GeneateNew(i);
+		//
+		//		for (int j = 0; j < C.Neighbors.Length; j++)
+		//		{
+		//			if (C.Neighbors[i].Neighbors[j] == null)
+		//			{
+		//				C.Neighbors[i].GeneateNew(j);
+		//			}
+		//			else
+		//				Debug.DrawLine(transform.position, C.Neighbors[i].Neighbors[j].transform.position, Color.green, 5);
+		//		}
+		//
+		//		//MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref C.chunk, C.Neighbors[i].GetChunkNeighbors(), C.Neighbors[i]);
+		//	}
+		//	else
+		//		Debug.DrawLine(transform.position, C.Neighbors[i].transform.position, Color.green, 5);
+		//}
 
-				for (int j = 0; j < C.Neighbors.Length; j++)
-				{
-					if (C.Neighbors[i].Neighbors[j] == null)
-					{
-						C.Neighbors[i].GeneateNew(j);
-					}
-					else
-						Debug.DrawLine(transform.position, C.Neighbors[i].Neighbors[j].transform.position, Color.green, 5);
-				}
+		//MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref C.chunk, C.GetChunkNeighbors(), C);
 
-				MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref C.chunk, C.Neighbors[i].GetChunkNeighbors(), C.Neighbors[i]);
-			}
-			else
-				Debug.DrawLine(transform.position, C.Neighbors[i].transform.position, Color.green, 5);
-		}
-
-		MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position), ref C.chunk, C.GetChunkNeighbors(), C);
+		C.GenNeighbors();
+		C.ResolveNeighbors();
 	}
 }
