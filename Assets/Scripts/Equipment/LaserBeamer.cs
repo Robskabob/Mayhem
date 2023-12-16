@@ -47,6 +47,17 @@ namespace L33t.Equipment
 				$"Heat {Mathf.Max(-waitTime, 0):f} / {MaxHeat:f}\n" +
 				$"Dist {MaxDistance}";
 		}
+		public override UI.StatMenu.data[] GetStats()
+		{
+			return new UI.StatMenu.data[]
+			{
+				 new UI.StatMenu.data("Damage"   ,Color.red,0,100, Damage)
+				,new UI.StatMenu.data("Fire Rate",Color.blue,0,FireTime, waitTime)
+				,new UI.StatMenu.data("Reload"   ,new Color(.5f,.25f,0),0,ReloadTime, waitTime)
+				,new UI.StatMenu.data("Heat"     ,Color.cyan,0,MaxHeat, -waitTime)
+				,new UI.StatMenu.data("Distance" ,Color.cyan,0,100, MaxDistance)
+			};
+		}
 
 		public struct BeamerStats
 		{

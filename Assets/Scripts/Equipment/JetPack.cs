@@ -92,6 +92,15 @@ namespace L33t.Equipment
 				$"Delay {Mathf.Max(0, FuelWait):f} / {FuelTime:f}";
 		}
 
+		public override UI.StatMenu.data[] GetStats()
+		{
+			return new UI.StatMenu.data[]
+			{
+				 new UI.StatMenu.data("Force",Color.blue,0,100, Force)
+				,new UI.StatMenu.data("Fuel" ,new Color(.5f,.25f,0),0,MaxFuel, Fuel)
+				,new UI.StatMenu.data("Fuel" ,Color.cyan,0,FuelTime, FuelWait)
+			};
+		}
 		public override void Randomize()
 		{
 			Force = Random.Range(1000, Random.Range(2500, 6000f));

@@ -35,7 +35,7 @@ namespace L33t.Equipment
 			ProjectileData.Impulse = Random.Range(5, 30f) * Random.Range(5, 30f) * FireTime;
 			ProjectileData.LifeTime = (Random.Range(1, 10f) * 100) / ProjectileData.Impulse;
 			ProjectileData.Speed = Random.Range(0, 5f) * ReloadTime;
-			ProjectileData.Dammage = (Random.Range(5, 50f)) / Clip / Shots * ReloadTime;
+			ProjectileData.Damage = (Random.Range(5, 50f)) / Clip / Shots * ReloadTime;
 			ProjectileData.Health = Random.Range(1, 100f);
 
 			SetStats(new ShotGunStats(this));
@@ -50,7 +50,7 @@ namespace L33t.Equipment
 		public override string PrintStats()
 		{
 			return
-				$"Damage {ProjectileData.Dammage:f}\n" +
+				$"Damage {ProjectileData.Damage:f}\n" +
 				$"Fire Rate {FireTime:f} Shots {Shots}\n" +
 				$"Spread{Spread:f} | {ForceSpread:f}\n" +
 				$"Reload {ReloadTime:f} | {Mathf.Max(waitTime, 0):f}\n" +
@@ -87,7 +87,7 @@ namespace L33t.Equipment
 				Impulse = Base.ProjectileData.Impulse;
 				LifeTime = Base.ProjectileData.LifeTime;
 				Speed = Base.ProjectileData.Speed;
-				Dammage = Base.ProjectileData.Dammage;
+				Dammage = Base.ProjectileData.Damage;
 				Health = Base.ProjectileData.Health;
 			}
 
@@ -104,7 +104,7 @@ namespace L33t.Equipment
 				Base.ProjectileData.Impulse = Impulse;
 				Base.ProjectileData.LifeTime = LifeTime;
 				Base.ProjectileData.Speed = Speed;
-				Base.ProjectileData.Dammage = Dammage;
+				Base.ProjectileData.Damage = Dammage;
 				Base.ProjectileData.Health = Health;
 			}
 		}

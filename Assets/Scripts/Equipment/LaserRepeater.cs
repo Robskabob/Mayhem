@@ -77,6 +77,18 @@ namespace L33t.Equipment
 				$"Dist {MaxDistance}\n" +
 				$"Clip {clip} / {Clip}";
 		}
+		public override UI.StatMenu.data[] GetStats()
+		{
+			return new UI.StatMenu.data[]
+			{
+				 new UI.StatMenu.data("Damage"   ,Color.red,0,100, Damage)
+				,new UI.StatMenu.data("Fire Rate",Color.blue,0,FireTime, waitTime)
+				,new UI.StatMenu.data("Reload"   ,new Color(.5f,.25f,0),0,ReloadTime, waitTime)
+				,new UI.StatMenu.data("Burn"     ,Color.cyan,0,BurnTime, -waitTime)
+				,new UI.StatMenu.data("Distance" ,Color.cyan,0,100, MaxDistance)
+				,new UI.StatMenu.data("clip"     ,Color.magenta,0,Clip, clip)
+			};
+		}
 
 		public struct RepeaterStats
 		{

@@ -11,6 +11,7 @@ public class PlayerBrain : Brain
 		Cam.enabled = true;
 		Cam.Target = Body.rb;
 	}
+	public string test;
 	public Vector2 Dir;
 	public Vector2 Look;
 	public int SlotW;
@@ -84,10 +85,10 @@ public class PlayerBrain : Brain
 		//		break;
 		//	}
 		//}
-
+		//test = Input.get
 		if (hasAuthority) 
 		{
-			Vector2 V = Vector2.zero;
+			Vector2 V = new Vector2(Input.GetAxis("MoveX"), Input.GetAxis("MoveY")); //Vector2.zero;
 
 			if (Input.GetKey(KeyCode.W))
 			{
@@ -111,17 +112,77 @@ public class PlayerBrain : Brain
 				Dir = V;
 				CmdDir(V);
 			}
+			Vector2 lookPos = new Vector2(Input.GetAxis("LookX"), Input.GetAxis("LookY"));
+			if (lookPos.magnitude < .1f)
+				lookPos = Cam.Camera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 
-			Vector2 lookPos = Cam.Camera.ScreenToWorldPoint(Input.mousePosition); 
 			if (Look != lookPos)
 			{
 				Look = lookPos;
 				CmdLook(lookPos);
 			}
 
+			if (Shift != Input.GetKey(KeyCode.LeftShift) || Input.GetAxis("DY") > .5f)
+			{
+				Shift = Input.GetKey(KeyCode.LeftShift) || Input.GetAxis("DY") > .5f;
+				CmdMod(Shift, 2);
+			}
+			if (ALT != Input.GetKey(KeyCode.LeftAlt) || Input.GetAxis("DX") > .5f)
+			{
+				ALT = Input.GetKey(KeyCode.LeftAlt) || Input.GetAxis("DX") > .5f;
+				CmdMod(ALT, 3);
+			}
+			if (CTRL != Input.GetKey(KeyCode.LeftControl) || Input.GetAxis("DY") < -.5f)
+			{
+				CTRL = Input.GetKey(KeyCode.LeftControl) || Input.GetAxis("DY") < -.5f;
+				CmdMod(CTRL, 4);
+			}
+
+			int slotc = 0;
+			if (Input.GetButton("Switch") || Input.GetButton("Right"))
+			{
+				if (Input.GetButton("Left"))// || Input.GetButton("Alt"))
+					slotc -= 1;
+				else
+					slotc += 1;
+
+				if (Shift)
+				{
+					SlotD += slotc;
+					if (SlotD >= Body.DirectedEquipment.Count)
+						SlotD = 0;
+					else if (SlotD < 0)
+						SlotD = Body.DirectedEquipment.Count - 1;
+				}
+				else if (ALT)
+				{
+					SlotA += slotc;
+					if (SlotA >= Body.ActiveEquipment.Count)
+						SlotA = 0;
+					else if (SlotA < 0)
+						SlotA = Body.ActiveEquipment.Count - 1;
+				}
+				else if (CTRL)
+				{
+					SlotP += slotc;
+					if (SlotP >= Body.PassiveEquipment.Count)
+						SlotP = 0;
+					else if (SlotP < 0)
+						SlotP = Body.PassiveEquipment.Count - 1;
+				}
+				else
+				{
+					SlotW += slotc;
+					if (SlotW >= Body.WeaponEquipment.Count)
+						SlotW = 0;
+					else if (SlotW < 0)
+						SlotW = Body.WeaponEquipment.Count - 1;
+				}
+			}
+
 			if (Input.GetKeyDown(KeyCode.Tab))
 			{
-				if (Input.GetKey(KeyCode.LeftShift))
+				if (Input.GetKey(KeyCode.LeftShift))// || Input.GetButton("Alt"))
 					SlotW -= 1;
 				else
 					SlotW += 1;
@@ -156,50 +217,34 @@ public class PlayerBrain : Brain
 					SlotW = slot;
 			}
 
-			if (Shooting != Input.GetMouseButton(0))
+			if (Shooting != (Input.GetMouseButton(0) || Input.GetAxis("Main") > .5f))
 			{
-				Shooting = Input.GetMouseButton(0);
+				Shooting = Input.GetMouseButton(0) || Input.GetAxis("Main") > .5f;
 				CmdShoot(Shooting);
 			}
 
-			if (ShootingSide != Input.GetMouseButton(1))
+			if (ShootingSide != (Input.GetMouseButton(1) || Input.GetAxis("Side") > .5f))
 			{
-				ShootingSide = Input.GetMouseButton(1);
+				ShootingSide = Input.GetMouseButton(1) || Input.GetAxis("Side") > .5f;
 				CmdShootS(ShootingSide);
 			}
 
-			if (Activate != Input.GetKey(KeyCode.Space))
+			if (Activate != (Input.GetKey(KeyCode.Space) || Input.GetButton("Alt")))
 			{
-				Activate = Input.GetKey(KeyCode.Space);
+				Activate = Input.GetKey(KeyCode.Space) || Input.GetButton("Alt");
 				CmdActivate(Activate);
 			}
 
-			if (Interacting != Input.GetKey(KeyCode.E))
+			if (Interacting != (Input.GetKey(KeyCode.E) || Input.GetButton("PickUp")))
 			{
-				Interacting = Input.GetKey(KeyCode.E);
+				Interacting = Input.GetKey(KeyCode.E) || Input.GetButton("PickUp");
 				CmdInteract(Interacting);
 			}
 
-			if (Dropping != Input.GetKey(KeyCode.Q))
+			if (Dropping != (Input.GetKey(KeyCode.Q) || Input.GetButton("Drop")))
 			{
-				Dropping = Input.GetKey(KeyCode.Q);
+				Dropping = Input.GetKey(KeyCode.Q) || Input.GetButton("Drop");
 				CmdDrop(Dropping);
-			}
-
-			if (Shift != Input.GetKey(KeyCode.LeftShift))
-			{
-				Shift = Input.GetKey(KeyCode.LeftShift);
-				CmdMod(Shift, 2);
-			}
-			if (ALT != Input.GetKey(KeyCode.LeftAlt))
-			{
-				ALT = Input.GetKey(KeyCode.LeftAlt);
-				CmdMod(ALT, 3);
-			}
-			if (CTRL != Input.GetKey(KeyCode.LeftControl))
-			{
-				CTRL = Input.GetKey(KeyCode.LeftControl);
-				CmdMod(CTRL, 4);
 			}
 
 			if (Time.time / updates > 1)

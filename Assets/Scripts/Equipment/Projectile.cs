@@ -35,7 +35,7 @@ public class Projectile : MonoBehaviour
 	{
 		if (col.gameObject.GetComponent<Mob>() is Mob M)
 		{
-			M.Dammage(Data.Dammage);
+			M.Dammage(Data.Damage);
 			LifeTime--;
 		}
 	}
@@ -49,7 +49,7 @@ public class Projectile : MonoBehaviour
 		if (col.gameObject.GetComponent<Projectile>() is Projectile P)
 		{
 			if(P.Owner != Owner)
-				P.Health -= Data.Dammage;
+				P.Health -= Data.Damage;
 		}
 	}
 }
@@ -61,7 +61,7 @@ public class ProjectileData
 	public float LifeTime;
 	public float Impulse;
 	public float Speed;
-	public float Dammage;
+	public float Damage;
 	public float Health;
 
 	public ProjectileData Clone() 
@@ -70,7 +70,7 @@ public class ProjectileData
 		PD.LifeTime = LifeTime;
 		PD.Impulse = Impulse;
 		PD.Speed = Speed;
-		PD.Dammage = Dammage;
+		PD.Damage = Damage;
 		PD.Health = Health;
 		return PD;
 	}

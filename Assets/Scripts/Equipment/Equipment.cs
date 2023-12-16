@@ -14,6 +14,7 @@ namespace L33t.Equipment
 		public virtual void Drop() { }
 		public abstract void Randomize();
 		public abstract string PrintStats();
+		public abstract UI.StatMenu.data[] GetStats();
 		//public abstract void SetStats(EquipmentStats stats);
 		//
 		//public interface EquipmentStats 

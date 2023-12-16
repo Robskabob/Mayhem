@@ -233,9 +233,9 @@ public class Mob : MonoBehaviour
 
 		if (DirectedEquipment.Count > 0)
 		{
-			DirectedEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			DirectedEquipment[ActiveSlot].transform.right = B.GetLook();
 
-			if (B.isDropping())
+			if (B.isDropping())//switch to param for drop, so not playdependent
 			{
 				if (!wasDropping && (B as PlayerBrain).Shift)
 				{
@@ -289,7 +289,7 @@ public class Mob : MonoBehaviour
 
 		if (WeaponEquipment.Count > 0)
 		{
-			WeaponEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			WeaponEquipment[ActiveSlot].transform.right = B.GetLook();
 
 			if (B.isDropping())
 			{
@@ -398,7 +398,7 @@ public class NetMob : Mob
 
 		if (DirectedEquipment.Count > 0)
 		{
-			DirectedEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			DirectedEquipment[ActiveSlot].transform.right = B.GetLook();
 
 			if (B.isShootingSide())
 			{
@@ -420,7 +420,7 @@ public class NetMob : Mob
 
 		if (WeaponEquipment.Count > 0)
 		{
-			WeaponEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			WeaponEquipment[ActiveSlot].transform.right = B.GetLook();
 
 			if (B.isShooting())
 			{

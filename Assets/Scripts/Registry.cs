@@ -121,7 +121,8 @@ public class Registry
 					return "Not All Parameters Filled";
 				if(uint.TryParse(par[1],out uint id))
 					if (NetSystem.I.PlayerBrains.TryGetValue(id, out PlayerBrain PB))
-						PB.CmdDie();
+					{ PB.CmdDie();
+						return "Killed"; }
 					else
 						return "Invalid ID";
 				else

@@ -76,7 +76,7 @@ namespace L33t.Equipment
 			if (inUse == false && !Latched)
 			{
 				LineDistance = 0;
-				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance, 1 << 9);
+				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos, MaxDistance, 1 << 9);
 				if (r.point == Vector2.zero)
 					return;
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
@@ -131,7 +131,7 @@ namespace L33t.Equipment
 				RaycastHit2D r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 1] - (Vector2)transform.position, Distance - .01f, 1 << 9);
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
 				{
-					Health -= P.Data.Dammage;
+					Health -= P.Data.Damage;
 					if (Health < 0)
 						inUse = false;
 					return;
@@ -147,7 +147,7 @@ namespace L33t.Equipment
 					r = Physics2D.Raycast(transform.position, PosStack[PosStack.Count - 2] - (Vector2)transform.position, Vector2.Distance(PosStack[PosStack.Count - 2], transform.position) - .01f, 1 << 9);
 					if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P2)
 					{
-						Health -= P2.Data.Dammage;
+						Health -= P2.Data.Damage;
 						if (Health < 0)
 							inUse = false;
 						return;
@@ -227,7 +227,17 @@ namespace L33t.Equipment
 				$"R {BounceRange:f} | {NormalRange:f}\n" +
 				$"Mult {MaxBounceMult:f}";
 		}
-
+		public override UI.StatMenu.data[] GetStats()
+		{
+			return new UI.StatMenu.data[]
+			{
+				 new UI.StatMenu.data("Health"  ,Color.red,0,MaxHealth, Health)
+				,new UI.StatMenu.data("Distance",Color.blue,0,100, MaxDistance)
+				,new UI.StatMenu.data("Bounce"  ,new Color(.5f,.25f,0),0,100, MaxBounceMult)
+				,new UI.StatMenu.data("B Range" ,Color.cyan,0,100, BounceRange)
+				,new UI.StatMenu.data("Range"   ,Color.cyan,0,100, NormalRange)
+			};
+		}
 		public override void Randomize()
 		{
 			MaxHealth = Random.Range(5, 100f);

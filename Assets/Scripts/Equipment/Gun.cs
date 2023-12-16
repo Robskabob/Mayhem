@@ -107,7 +107,7 @@ namespace L33t.Equipment
 		protected virtual void Fire(Vector2 Pos)
 		{
 			Projectile P = Instantiate(Projectile);
-			P.Shoot(Holder, Pos - (Vector2)transform.position, ProjectileData);
+			P.Shoot(Holder, Pos, ProjectileData);// + (Vector2)transform.position
 		}
 
 		protected override void Update()
@@ -128,7 +128,7 @@ namespace L33t.Equipment
 			ProjectileData.Impulse = Random.Range(10, 1000f) * FireTime;
 			ProjectileData.LifeTime = (Random.Range(1, 50f) * 100) / ProjectileData.Impulse;
 			ProjectileData.Speed = Random.Range(0, 5f) * ReloadTime;
-			ProjectileData.Dammage = (Random.Range(5, 30f)) / Clip * ReloadTime;
+			ProjectileData.Damage = (Random.Range(5, 30f)) / Clip * ReloadTime;
 			ProjectileData.Health = Random.Range(1, 100f);
 
 			SetStats(new GunStats(this));
@@ -143,12 +143,27 @@ namespace L33t.Equipment
 		public override string PrintStats()
 		{
 			return
-				$"Damage {ProjectileData.Dammage:f}\n" +
+				$"Damage {ProjectileData.Damage:f}\n" +
 				$"Fire Rate {FireTime:f}\n" +
 				$"Reload {ReloadTime:f} | {Mathf.Max(waitTime, 0):f}\n" +
 				$"Speed {ProjectileData.Impulse:f} | {ProjectileData.Speed:f}\n" +
 				$"Clip {clip} / {Clip}";
 		}
+
+		public override UI.StatMenu.data[] GetStats()
+		{
+			return new UI.StatMenu.data[]
+			{
+				 new UI.StatMenu.data("Damage"   ,Color.red,0,100, ProjectileData.Damage)
+				,new UI.StatMenu.data("Fire Rate",Color.blue,0,FireTime, waitTime)
+				,new UI.StatMenu.data("Reload"   ,new Color(.5f,.25f,0),0,ReloadTime, waitTime)
+				,new UI.StatMenu.data("Impulse"  ,Color.cyan,0,100, ProjectileData.Impulse)
+				,new UI.StatMenu.data("Speed"    ,Color.cyan,0,100, ProjectileData.Speed)
+				,new UI.StatMenu.data("Clip"     ,Color.magenta,0,Clip, clip)
+			};
+		}
+
+		//Gen Stats UI
 
 		public struct GunStats
 		{
@@ -173,7 +188,7 @@ namespace L33t.Equipment
 				Impulse = Base.ProjectileData.Impulse;
 				LifeTime = Base.ProjectileData.LifeTime;
 				Speed = Base.ProjectileData.Speed;
-				Dammage = Base.ProjectileData.Dammage;
+				Dammage = Base.ProjectileData.Damage;
 				Health = Base.ProjectileData.Health;
 			}
 
@@ -187,7 +202,7 @@ namespace L33t.Equipment
 				Base.ProjectileData.Impulse = Impulse;
 				Base.ProjectileData.LifeTime = LifeTime;
 				Base.ProjectileData.Speed = Speed;
-				Base.ProjectileData.Dammage = Dammage;
+				Base.ProjectileData.Damage = Dammage;
 				Base.ProjectileData.Health = Health;
 			}
 		}
@@ -316,11 +331,11 @@ namespace L33t.Equipment
 		}
 		protected virtual void Fire(Vector2 Pos)
 		{
-			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos - (Vector2)transform.parent.position, MaxDistance, 6656);//layers 9,11,12
+			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos, MaxDistance, 6656);//layers 9,11,12
 			SetVis(true);
 			if (r.point == Vector2.zero)
 			{
-				HitPos = (Pos - (Vector2)transform.parent.position).normalized * MaxDistance + (Vector2)transform.position;
+				HitPos = Pos.normalized * MaxDistance + (Vector2)transform.position;
 			}
 			else
 			{

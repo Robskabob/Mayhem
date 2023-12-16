@@ -1,4 +1,5 @@
 ﻿using L33t.Equipment;
+using L33t.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class ToolTip : MonoBehaviour
     public Cam Cam;
     public Equipment Item;
     public Text text;
+    public StatMenu StatMenu;
 
     void Start()
     {
@@ -31,6 +33,8 @@ public class ToolTip : MonoBehaviour
                 if (Item && Vector2.Distance(E.transform.position, mouse) >= Vector2.Distance(Item.transform.position, mouse))
                     return;
                 Item = E;
+                StatMenu.gameObject.SetActive(true);
+                StatMenu.Setup(E.name,E.GetStats());
                 text.text = Item.PrintStats();
                 wait = 1;
                 return;
@@ -40,6 +44,7 @@ public class ToolTip : MonoBehaviour
 
         if (Item) 
         {
+            StatMenu.UpdateValues(Item.GetStats());
             transform.position = Item.transform.position;
             if (2 < Vector2.Distance(Item.transform.position, mouse))
             {
@@ -47,6 +52,7 @@ public class ToolTip : MonoBehaviour
                 if (wait < 0)
                 {
                     text.text = "";
+                    StatMenu.gameObject.SetActive(false);
                 }
             }
             else
