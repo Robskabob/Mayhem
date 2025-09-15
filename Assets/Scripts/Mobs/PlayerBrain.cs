@@ -116,7 +116,7 @@ public class PlayerBrain : Brain
 				CmdDir(V);
 			}
 
-			Vector2 lookPos = ((Vector2)Cam.Camera.ScreenToWorldPoint(Input.mousePosition) + new Vector2(Input.GetAxis("4th Axis"), Input.GetAxis("5th Axis"))).normalized; 
+			Vector2 lookPos = ((Vector2)Cam.Camera.ScreenToWorldPoint(Input.mousePosition) + new Vector2(Input.GetAxis("X2"), Input.GetAxis("Y2"))).normalized; 
 			if (Look != lookPos)
 			{
 				Look = lookPos;
