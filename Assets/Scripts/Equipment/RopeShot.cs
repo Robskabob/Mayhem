@@ -74,7 +74,7 @@ namespace L33t.Equipment
 		{
 			if (inUse == false && !Latched && !inAir)
 			{
-				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance,1<<9);
+				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos/* - (Vector2)transform.parent.position*/, MaxDistance,1<<9);
 				if (r.point == Vector2.zero)
 					return;
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)

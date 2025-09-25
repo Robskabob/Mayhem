@@ -90,7 +90,7 @@ namespace L33t.Equipment
 		protected virtual void Fire(Vector2 Pos)
 		{
 			Projectile P = Instantiate(Projectile);
-			P.Shoot(Holder, Pos - (Vector2)transform.position, ProjectileData);
+			P.Shoot(Holder, Pos/* - (Vector2)transform.position*/, ProjectileData);
 		}
 
 		protected override void Update()
@@ -299,11 +299,11 @@ namespace L33t.Equipment
 		}
 		protected virtual void Fire(Vector2 Pos)
 		{
-			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos - (Vector2)transform.parent.position, MaxDistance, 6656);//layers 9,11,12
+			RaycastHit2D r = Physics2D.Raycast(transform.parent.position, Pos/* - (Vector2)transform.parent.position*/, MaxDistance, 6656);//layers 9,11,12
 			SetVis(true);
 			if (r.point == Vector2.zero)
 			{
-				HitPos = (Pos - (Vector2)transform.parent.position).normalized * MaxDistance + (Vector2)transform.position;
+				HitPos = /*(*/Pos/* - (Vector2)transform.parent.position).normalized*/ * MaxDistance + (Vector2)transform.position;
 			}
 			else
 			{
@@ -316,7 +316,7 @@ namespace L33t.Equipment
 					}
 					if (r.collider.GetComponent<Mob>() is Mob M)
 					{
-						M.Dammage(Damage * Time.deltaTime);
+						M.Damage(Damage * Time.deltaTime,new DamageSource(Holder,Holder.transform.position));
 					}
 				}
 			}

@@ -76,7 +76,7 @@ namespace L33t.Equipment
 			if (inUse == false && !Latched)
 			{
 				LineDistance = 0;
-				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos - (Vector2)transform.parent.position, MaxDistance, 1 << 9);
+				RaycastHit2D r = Physics2D.Raycast(transform.parent.position, pos/* - (Vector2)transform.parent.position*/, MaxDistance, 1 << 9);
 				if (r.point == Vector2.zero)
 					return;
 				if (r.collider != null && r.collider.GetComponent<Projectile>() is Projectile P)
@@ -123,7 +123,27 @@ namespace L33t.Equipment
 		public List<bool> SignStack;
 		public float Health;
 		public float MaxHealth;
-		private void FixedUpdate()
+        private void OnDrawGizmos()
+        {
+			if(true)//Debug
+            {
+				//Gizmos.arc
+				Gizmos.color = Color.red;
+				for (int i = 0; i < PosStack.Count; i++)
+				{
+					Gizmos.DrawWireSphere(PosStack[i], .6f);
+					if(PosStack.Count-1 == i)
+                    {
+						Gizmos.DrawLine(transform.position, PosStack[i]);
+                    }
+					else
+                    {
+						Gizmos.DrawLine(PosStack[i], PosStack[i+1]);
+                    }
+                }
+            }
+        }
+        private void FixedUpdate()
 		{
 			if (inUse)
 			{

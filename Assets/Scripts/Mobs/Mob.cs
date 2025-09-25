@@ -4,6 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public struct DamageSource
+{
+	public Mob Source;
+	public Vector2 SourceLocation;
+
+    public DamageSource(Mob source, Vector2 sourceLocation)
+    {
+        Source = source;
+        SourceLocation = sourceLocation;
+    }
+}
+
 public class Mob : MonoBehaviour 
 {
 	public Text NamePlate;
@@ -21,7 +33,7 @@ public class Mob : MonoBehaviour
 	public float Speed;
 	public float AirSpeed;
 	public float Jump;
-	public int Team;
+	public int Team = -1;
 
 	public int MaxItems = 3;
 
@@ -38,15 +50,20 @@ public class Mob : MonoBehaviour
 
 	public Region Inside;
 	public Vector2Int ChunkPos;
-	public delegate void MobEvent(Mob M);
+
+	public delegate void MobEvent(Mob M, DamageSource Source);
+	public delegate void DamageEvent(Mob M, DamageSource damageSource, float damage);
+
 	public event MobEvent OnDeath;
+	public event DamageEvent OnDamageDelt;
+	public event DamageEvent OnDamageTaken;
 
 	public Transform T1;
 	public Transform T2;
 
-	public void Kill() 
+	public void Kill(DamageSource damageSource) 
 	{
-		OnDeath?.Invoke(this);
+		OnDeath?.Invoke(this,damageSource);
 	}
 
 	public float JumpTime;
@@ -85,32 +102,47 @@ public class Mob : MonoBehaviour
 		return true;
 	}
 
-	public void Dammage(float value)
+	public void Damage(float value, DamageSource Source)
 	{
 		ShieldWait = ShieldTime;
 		if (Shield > value)
 		{
+			Source.Source.OnDamageDelt?.Invoke(this, Source, value);
+			OnDamageTaken?.Invoke(this, Source, value);
 			Shield -= value;
 		}
 		else if (Shield > 0)
 		{
 			//shield Break;
+			Source.Source.OnDamageDelt?.Invoke(this,Source, Mathf.Min(Health, value));
+			OnDamageTaken?.Invoke(this, Source, Mathf.Min(Health, value));
 			Health -= value - Shield;
 			Shield = 0;
 		}
-		else
+        else
+		{
+			Source.Source.OnDamageDelt?.Invoke(this, Source, Mathf.Min(Health, value));
+			OnDamageTaken?.Invoke(this, Source, Mathf.Min(Health, value));
 			Health -= value;
+        }
+
+
+		if (Health < 0)
+		{
+			OnDeath?.Invoke(this,Source);
+			B.BodyDied(Source);
+		}
 	}
 
 	protected virtual void FixedUpdate()
 	{
-		int ychunk = (int)((transform.position.y - 50) / 100);
-		Vector2Int newChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 + ychunk % 2))) / 100),ychunk);
+		//int ychunk = (int)((transform.position.y - 50) / 100);
+		Vector2Int newChunkPos = RegionManager.GetChunkPos(transform.position); //new Vector2Int((int)((transform.position.x + (50 * (1 + ychunk % 2))) / 100),ychunk);
 		if (ChunkPos != newChunkPos)
 		{
 			ChunkPos = newChunkPos;
-			ychunk = (ChunkPos.y * 100);
-			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
+			//ychunk = (ChunkPos.y * 100);
+			Vector2Int ChunkLoc = ChunkPos;//new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
 			Debug.Log(ChunkLoc);
 			Region old = Inside;
 			if (old)
@@ -123,7 +155,7 @@ public class Mob : MonoBehaviour
 				}
 			}
 
-			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
+			Inside = Region.HexRegionManager.GlobalRegions[ChunkLoc];
 
 			if(B is PlayerBrain) 
 			{
@@ -142,7 +174,7 @@ public class Mob : MonoBehaviour
 		}
 		else
 		{
-			if (Dir.y > .5 && JumpWait < 0 && rb.velocity.y < Jump / 100)
+			if (Dir.y > .707 && JumpWait < 0 && rb.velocity.y < Jump / 100)
 			{
 				rb.AddForce(Vector2.up * Jump);
 				JumpWait = JumpTime;
@@ -229,7 +261,7 @@ public class Mob : MonoBehaviour
 
 		if (DirectedEquipment.Count > 0)
 		{
-			DirectedEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			DirectedEquipment[ActiveSlot].transform.right = B.GetLook();// - (Vector2)transform.position;
 
 			if (B.isDropping())
 			{
@@ -285,7 +317,7 @@ public class Mob : MonoBehaviour
 
 		if (WeaponEquipment.Count > 0)
 		{
-			WeaponEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			WeaponEquipment[ActiveSlot].transform.right = B.GetLook();// - (Vector2)transform.position;
 
 			if (B.isDropping())
 			{
@@ -321,25 +353,25 @@ public class Mob : MonoBehaviour
 			else
 				ShieldWait -= Time.deltaTime;
 		}
-
-		if(Health < 0)
-		{
-			B.Die();
-		}
 	}
 
 	private void Start()
 	{
 		if (B is PlayerBrain)
 		{
-			int ychunk = (int)((transform.position.y - 50) / 100);
-			ChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100), ychunk);
-			ychunk = (ChunkPos.y * 100);
-			Vector2Int ChunkLoc = new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
-			Inside = Region.RegionManager.GlobalRegions[ChunkLoc];
+			//int ychunk = (int)((transform.position.y - 50) / 100);
+			//ChunkPos = new Vector2Int((int)((transform.position.x + (50 * (1 - ychunk % 2))) / 100), ychunk);
+			//ychunk = (ChunkPos.y * 100);
+			Vector2Int ChunkLoc = RegionManager.GetChunkPos(transform.position);//new Vector2Int((ChunkPos.x * 100) - (50 * (ChunkPos.y % 2)), ychunk);
+			
+			if(RegionManager.ActiveRegionManager is HexRegionManager)
+            {
 
-			Inside.OnNeighborActivated();
-			Inside.OnPlayerEnter(B as PlayerBrain);
+				Inside = Region.HexRegionManager.GlobalRegions[ChunkLoc];
+
+				Inside.OnNeighborActivated();
+				Inside.OnPlayerEnter(B as PlayerBrain);
+            }
 		}
 	}
 
@@ -394,7 +426,7 @@ public class NetMob : Mob
 
 		if (DirectedEquipment.Count > 0)
 		{
-			DirectedEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			DirectedEquipment[ActiveSlot].transform.right = B.GetLook()/* - (Vector2)transform.position*/;
 
 			if (B.isShootingSide())
 			{
@@ -416,7 +448,7 @@ public class NetMob : Mob
 
 		if (WeaponEquipment.Count > 0)
 		{
-			WeaponEquipment[ActiveSlot].transform.right = B.GetLook() - (Vector2)transform.position;
+			WeaponEquipment[ActiveSlot].transform.right = B.GetLook()/* - (Vector2)transform.position*/;
 
 			if (B.isShooting())
 			{

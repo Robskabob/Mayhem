@@ -28,8 +28,22 @@ public class PlayerBrain : Brain
 
 	public bool Hiding;
 
+	public bool isController;
+	public Vector2 lastMouse;
+
 	//public NetPlayer LocalPlayer;
-	public uint LocalPlayerID;
+	public uint NetPlayerID;
+	private int team;
+	public int Team { get => team; set { team = value; Body.Team = value; } }
+
+
+	public delegate void go();
+	public delegate void DeathEvent(PlayerBrain player, DamageSource damageSource);
+	public delegate void DamageEvent(PlayerBrain player, DamageSource damageSource, float damage);
+
+	public event DeathEvent OnDeath;
+	public event DamageEvent OnDamageDelt;
+	public event DamageEvent OnDamageTaken;
 
 	private void Start()
 	{
@@ -40,6 +54,7 @@ public class PlayerBrain : Brain
 			PlayerClient.PC.PB = this;
 			PlayerClient.PC.OnStartClient();
 		}
+		AtatchStatsToBody(Body);
 	}
 
 	public void BodySwap(Mob body) 
@@ -62,7 +77,25 @@ public class PlayerBrain : Brain
 		Body.B = b;
 		b.Body = body;
 		Body = body;
+
+
 	}
+
+	public void AtatchStatsToBody(Mob Body)
+    {
+		Body.OnDamageDelt += (Mob M, DamageSource damageSource, float damage) => OnDamageDelt(this, damageSource, damage);
+		Body.OnDamageTaken += (Mob M, DamageSource damageSource, float damage) => OnDamageTaken(this, damageSource, damage);
+	}
+
+	public void DetatchStatsFromBody(Mob Body)
+	{
+		Body.OnDamageDelt -= (Mob M, DamageSource damageSource, float damage) => OnDamageDelt(this, damageSource, damage);
+		Body.OnDamageTaken -= (Mob M, DamageSource damageSource, float damage) => OnDamageTaken(this, damageSource, damage);
+	}
+
+	public Vector2 A;
+	public Vector2 B;
+	public Vector2 C;
 
 	public void Update()
 	{
@@ -89,7 +122,7 @@ public class PlayerBrain : Brain
 		{
 			Vector2 V = Vector2.zero;
 
-			if (Input.GetKey(KeyCode.W))
+			if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.JoystickButton0))
 			{
 				V += Vector2.up;
 			}
@@ -106,9 +139,10 @@ public class PlayerBrain : Brain
 				V += Vector2.right;
 			}
 
-			V += new Vector2(Input.GetAxis("X Axis"), Input.GetAxis("Y Axis"));
-
-			V = V.normalized;
+			V += new Vector2(Input.GetAxis("X Axis"), Mathf.Min(Input.GetAxis("Y Axis"),.5f));
+			//Debug.Log(V.sqrMagnitude);
+			if (V.sqrMagnitude > 1f)
+				V.Normalize();
 
 			if(Dir != V) 
 			{
@@ -116,14 +150,32 @@ public class PlayerBrain : Brain
 				CmdDir(V);
 			}
 
-			Vector2 lookPos = ((Vector2)Cam.Camera.ScreenToWorldPoint(Input.mousePosition) + new Vector2(Input.GetAxis("X2"), Input.GetAxis("Y2"))).normalized; 
+			Vector2 lookPos = new Vector2(Input.GetAxis("X2"), Input.GetAxis("Y2"));
+			if (lookPos.sqrMagnitude > .01f)
+            {
+				isController = true;
+            }
+            else { lookPos = Look; }
+
+
+			C = Input.mousePosition;
+			if (C != lastMouse)
+            {
+				isController = false;
+				lastMouse = C;
+				A = Cam.Camera.ScreenToWorldPoint(C) - transform.position;
+
+				lookPos = A.normalized;
+			}
+
+			//Vector2 lookPos = (A+B).normalized;//((Vector2)Cam.Camera.ScreenToWorldPoint(Input.mousePosition) + new Vector2(Input.GetAxis("X2"), Input.GetAxis("Y2"))).normalized; 
 			if (Look != lookPos)
 			{
 				Look = lookPos;
 				CmdLook(lookPos);
 			}
 
-			if (Input.GetKeyDown(KeyCode.Tab))
+			if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.JoystickButton3))
 			{
 				if (Input.GetKey(KeyCode.LeftShift))
 					SlotW -= 1;
@@ -160,33 +212,34 @@ public class PlayerBrain : Brain
 					SlotW = slot;
 			}
 
-			if (Shooting != Input.GetMouseButton(0))
+			if (Shooting != (Input.GetMouseButton(0) || Input.GetAxis("RT") > .2f))
 			{
-				Shooting = Input.GetMouseButton(0);
+				Shooting = Input.GetMouseButton(0) || Input.GetAxis("RT") > .2f;
 				CmdShoot(Shooting);
 			}
-
-			if (ShootingSide != Input.GetMouseButton(1))
+			//if (Input.GetMouseButtonDown(1))
+			//	ShootingSide = !ShootingSide;
+			if (ShootingSide != (Input.GetMouseButton(1) || Input.GetAxis("LT") > .2f))
 			{
-				ShootingSide = Input.GetMouseButton(1);
+				ShootingSide = Input.GetMouseButton(1) || Input.GetAxis("LT") > .2f;
 				CmdShootS(ShootingSide);
 			}
 
-			if (Activate != Input.GetKey(KeyCode.Space))
+			if (Activate != Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.JoystickButton5))
 			{
-				Activate = Input.GetKey(KeyCode.Space);
+				Activate = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.JoystickButton5);
 				CmdActivate(Activate);
 			}
 
-			if (Interacting != Input.GetKey(KeyCode.E))
+			if (Interacting != Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.JoystickButton2))
 			{
-				Interacting = Input.GetKey(KeyCode.E);
+				Interacting = Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.JoystickButton2);
 				CmdInteract(Interacting);
 			}
 
-			if (Dropping != Input.GetKey(KeyCode.Q))
+			if (Dropping != Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.JoystickButton1))
 			{
-				Dropping = Input.GetKey(KeyCode.Q);
+				Dropping = Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.JoystickButton1);
 				CmdDrop(Dropping);
 			}
 
@@ -228,7 +281,7 @@ public class PlayerBrain : Brain
 
 	int updates;
 
-	[Command]
+    [Command]
 	public void CmdPos(Vector2 pos, Vector2 vel)
 	{
 		transform.position = pos;
@@ -432,8 +485,9 @@ public class PlayerBrain : Brain
 		return Dropping;
 	}
 
-	public override void Die()
-	{
+    public override void BodyDied(DamageSource damageSource)
+    {
+		OnDeath?.Invoke(this,damageSource);
 		if (hasAuthority)
 			CmdDie();
 	}

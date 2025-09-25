@@ -35,7 +35,7 @@ public class Projectile : MonoBehaviour
 	{
 		if (col.gameObject.GetComponent<Mob>() is Mob M)
 		{
-			M.Dammage(Data.Dammage);
+			M.Damage(Data.Dammage, new DamageSource(Owner,Owner.transform.position));//use Original Fiered Position?
 			LifeTime--;
 		}
 	}

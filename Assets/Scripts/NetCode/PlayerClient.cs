@@ -24,7 +24,7 @@ public class PlayerClient : MonoBehaviour
 
 	private void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.Tilde))
+		if(Input.GetKeyDown(KeyCode.Tilde) || Input.GetKeyDown(KeyCode.Joystick1Button6))
 		{
 			Chat.gameObject.SetActive(!Chat.gameObject.activeSelf);
 		}

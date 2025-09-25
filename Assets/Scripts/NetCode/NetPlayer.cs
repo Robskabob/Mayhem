@@ -96,6 +96,7 @@ namespace L33t.Network
 				NetworkIdentity PBI = NetworkIdentity.spawned[PD.brainid];
 
 				PlayerBrain PB = PBI.GetComponent<PlayerBrain>();
+				PB.NetPlayerID = PD.netid;//maybe help
 
 				NetSystem.I.PlayerBrains.Add(PD.netid, PB);
 				NetSystem.I.Players.Add(PD.netid, NPI.GetComponent<NetPlayer>());

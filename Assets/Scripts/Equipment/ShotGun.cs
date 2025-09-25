@@ -16,7 +16,7 @@ namespace L33t.Equipment
 				Projectile P = Instantiate(Projectile);
 				ProjectileData D = ProjectileData.Clone();
 				D.Impulse += Random.Range(-Mathf.Min(D.Impulse / 2, ForceSpread), ForceSpread);
-				P.Shoot(Holder, (Pos + Random.insideUnitCircle * Spread) - (Vector2)transform.position, D);
+				P.Shoot(Holder, ((Pos*25) + Random.insideUnitCircle * Spread), D);
 			}
 		}
 

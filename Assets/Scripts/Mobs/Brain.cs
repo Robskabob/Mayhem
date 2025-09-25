@@ -17,5 +17,5 @@ public abstract class Brain : NetworkBehaviour
 	public abstract bool isInteracting();
 	public abstract bool isDropping();
 	public abstract void OnDrop();
-	public abstract void Die(); 
+	public abstract void BodyDied(DamageSource damageSource); 
 }

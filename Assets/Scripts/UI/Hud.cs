@@ -12,7 +12,10 @@ public class Hud : MonoBehaviour
 	public Text Slot;
 	public Text Stats;
 
+	public Text Score;
+
 	public Mob Body;
+	public GameManager GM;
 
 	private void Start()
 	{
@@ -21,11 +24,21 @@ public class Hud : MonoBehaviour
 
 	private void Update()
 	{
+		if (GM.GameMode.isActive)
+		{
+			string label = $"{GM.GameMode.ScoreTarget}\n";
+			for (int i = 0; i < GM.GameMode.TeamCount; i++)
+            {
+				label += $"{GM.GameMode.Stats.Teams[i].Score}\n";
+            }
+			Score.text = label;
+		}
+
 		Shield.fillAmount = Body.Shield / Body.MaxShield;
 		Health.fillAmount = Body.Health / Body.MaxHealth;
-
-		int ychunk = (int)((Body.transform.position.y - 50) / 100);
-		int xchunk = (int)((Body.transform.position.x + (50 * (1 - ychunk % 2)))/100);
+		Vector2Int chunkpos = RegionManager.GetChunkPos(Body.transform.position);
+		int ychunk = chunkpos.x;// (int)((Body.transform.position.y - 50) / 100);
+		int xchunk = chunkpos.y;// (int)((Body.transform.position.x + (50 * (1 - ychunk % 2)))/100);
 		Altimeter.text = $"X:{(int)Body.transform.position.x}, Y:{(int)Body.transform.position.y} | X:{xchunk}, Y:{ychunk}";
 		Slot.text = "";
 		Stats.text = "";

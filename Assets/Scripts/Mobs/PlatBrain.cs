@@ -26,7 +26,7 @@ public class PlatBrain : Brain
 					if (Vector2.Distance(PB.transform.position, transform.position) < 100)
 						return;
 				}
-				Die();
+				BodyDied(new DamageSource());
 			}
 		}
 		//foreach (PlayerBrain PB in NetSystem.I.PlayerBrains.Values)
@@ -42,18 +42,18 @@ public class PlatBrain : Brain
 	private void OnDisable()
 	{
 		if (isServer)
-			Die();
+			BodyDied(new DamageSource());
 		//if(!gameObject.activeSelf)
 		//	gameObject.SetActive(true);
 		//enabled = true;
 		//Body.rb.simulated = true;
 	}
 
-	public override void Die()
-	{
+    public override void BodyDied(DamageSource damageSource)
+    {
 		if (!isServer)
 			return;
-		Body.Kill();
+		Body.Kill(damageSource);
 		Vector2 rel;
 		if (NetSystem.I.PlayerBrains.Count > 0)
 			rel = NetSystem.I.PlayerBrains.ElementAt(Random.Range(0, NetSystem.I.PlayerBrains.Count)).Value.transform.position;

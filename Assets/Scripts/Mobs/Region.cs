@@ -15,7 +15,7 @@ public class Region : MonoBehaviour
 		new Vector2(-50,100)
 	};
 
-	public static RegionManager RegionManager;
+	public static HexRegionManager HexRegionManager;
 	//public static Dictionary<Vector2Int, Region> GlobalRegions = new Dictionary<Vector2Int, Region>();
 	//public MapGenerator MapGen;
 
@@ -45,9 +45,17 @@ public class Region : MonoBehaviour
 
 	private void Start()
 	{
-		if(!RegionManager.GlobalRegions.ContainsKey(Vector2Int.RoundToInt(transform.position)))
-			RegionManager.GlobalRegions.Add(Vector2Int.RoundToInt(transform.position), this);
-	}
+		if(!HexRegionManager.GlobalRegions.ContainsKey(RegionManager.GetChunkPos(transform.position)))
+        {
+            HexRegionManager.GlobalRegions.Add(RegionManager.GetChunkPos(transform.position), this);
+            Debug.LogError($"at:{transform.position},{RegionManager.GetChunkPos(transform.position)} | Chunk Created");
+        }
+        //     else
+        //     {
+        //Debug.LogError($"at:{transform.position},{RegionManager.GetChunkPos(transform.position)} | Chunk Created in already occupied chunk");
+        //gameObject.SetActive(false);
+        //     }
+    }
 
 	public void OnActivate() 
 	{
@@ -136,7 +144,7 @@ public class Region : MonoBehaviour
 		Mobs.Remove(body);
 	}
 
-	public void MobDied(Mob body)
+	public void MobDied(Mob body, DamageSource damageSource)
 	{
 		Mobs.Remove(body);
 		body.OnDeath -= MobDied;
@@ -280,7 +288,7 @@ public class Region : MonoBehaviour
 			else
 				Debug.DrawLine(transform.position, Neighbors[i].transform.position, Color.green, 5);
 		}
-		RegionManager.MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position),ref chunk, GetChunkNeighbors(),this);
+		HexRegionManager.MapGen.ResolveChunk(Vector2Int.RoundToInt(transform.position),ref chunk, GetChunkNeighbors(),this);
 		loadLevel = LoadLevel.loaded;
 	}
 	public void GenNeighbors() 
@@ -320,10 +328,10 @@ public class Region : MonoBehaviour
 		if (!TryGet(slot, out Region R))
 		{
 			Debug.DrawLine(transform.position, transform.position + (Vector3)Offsets[slot], Color.red,5);
-			R = Instantiate(RegionManager.Default, transform.position + (Vector3)Offsets[slot], Quaternion.identity, transform.parent);
-			RegionManager.GlobalRegions.Add(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]),R);
+			R = Instantiate(HexRegionManager.Default, transform.position + (Vector3)Offsets[slot], Quaternion.identity, transform.parent);
+			HexRegionManager.GlobalRegions.Add(RegionManager.GetChunkPos((Vector2)transform.position + Offsets[slot]),R);
 			R.gameObject.SetActive(true);
-			R.chunk = RegionManager.MapGen.GetNewChunk(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]));
+			R.chunk = HexRegionManager.MapGen.GetNewChunk(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]));
 			R.Active = false;
 			R.Objects = new List<Transform>();
 			R.loadLevel = LoadLevel.MinLoad;
@@ -343,7 +351,7 @@ public class Region : MonoBehaviour
 
 	public bool TryGet(int slot, out Region R) 
 	{
-		RegionManager.GlobalRegions.TryGetValue(Vector2Int.RoundToInt((Vector2)transform.position + Offsets[slot]),out R);
+		HexRegionManager.GlobalRegions.TryGetValue(RegionManager.GetChunkPos((Vector2)transform.position + Offsets[slot]),out R);
 
 		if (R == null)
 		{

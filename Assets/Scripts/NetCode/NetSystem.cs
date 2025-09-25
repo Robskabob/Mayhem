@@ -76,7 +76,7 @@ namespace L33t.Network
 				PlatBrain PlB = Instantiate(PlatGuy);
 				PlB.transform.position = new Vector3(300, 300, 0) * Random.insideUnitCircle;
 				NetworkServer.Spawn(PlB.gameObject);
-				PlB.Die();
+				PlB.BodyDied(new DamageSource());
 			}
 
 			//Players.Add(NP.netId, NP);
@@ -102,6 +102,7 @@ namespace L33t.Network
 
 			Players.Add(Join.id, NP);
 			PlayerBrains.Add(Join.id, PB);
+			PB.NetPlayerID = NP.netId;
 			Debug.Log("Completed");
 		}
 
